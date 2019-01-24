@@ -1,12 +1,21 @@
 import csv
+import argparse
+
 
 import yaml
 
 def getindexes(lst):
     indices = {}
+    noreadgroup = False
     for x in ["sample", "library","readgroup", "R1", "R1_md5", "R2", "R2_md5"]:
-        indices[x] = lst.index(x)
-    return indices
+        try:
+            indices[x] = lst.index(x)
+        except ValueError:
+            if x == "readgroup":
+                noreadgroup = True
+            else:
+                raise
+    return indices, noreadgroup
 
 
 def reformat(samples):
@@ -27,18 +36,21 @@ def reformat(samples):
     return out
 
 
-def main():
+def main(samplesheet):
     samples = {}
-    with open("test.tsv", "r") as csvfile:
+    with open(samplesheet, "r") as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=";,\t")
         csvfile.seek(0)
         reader = csv.reader(csvfile, dialect)
         header = next(reader)
-        indices = getindexes(header)
+        indices, noreadgroup = getindexes(header)
         for row in reader:
             sample = row[indices["sample"]]
             lib = row[indices["library"]]
-            rg = row[indices["readgroup"]]
+            if noreadgroup:
+                rg = lib
+            else:
+                rg = row[indices["readgroup"]]
 
             if not sample in samples.keys():
                 samples[sample] = {}
@@ -49,13 +61,18 @@ def main():
                     sample, lib, rg))
             samples[sample][lib][rg] = {
                 "R1": row[indices["R1"]],
-                "R1_md5": row[indices["R1_md5"]] if row[indices["R1_md5"]] != "" else None,
+                "R1_md5": row[indices["R1_md5"]] if row[indices["R1_md5"]] != ""
+                    else None,
                 "R2": row[indices["R2"]],
-                "R2_md5": row[indices["R2_md5"]] if row[indices["R2_md5"]] != "" else None}
+                "R2_md5": row[indices["R2_md5"]] if row[indices["R2_md5"]] != ""
+                    else None}
 
     # output
     print(yaml.dump(reformat(samples), default_flow_style=False))
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("samplesheet")
+    args = parser.parse_args()
+    main(args.samplesheet)
