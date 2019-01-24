@@ -4,10 +4,12 @@ import argparse
 
 import yaml
 
+
 def getindexes(lst):
     indices = {}
     noreadgroup = False
-    for x in ["sample", "library","readgroup", "R1", "R1_md5", "R2", "R2_md5"]:
+    for x in ["sample", "library", "readgroup", "R1", "R1_md5", "R2",
+              "R2_md5"]:
         try:
             indices[x] = lst.index(x)
         except ValueError:
@@ -28,9 +30,10 @@ def reformat(samples):
         for library in samples[sample]:
             libraryentry = {"id": library, "readgroups": []}
             for readgroup in samples[sample][library]:
-                libraryentry["readgroups"].append(
-                    {"id": readgroup,
-                    "reads":samples[sample][library][readgroup]})
+                libraryentry["readgroups"].append({
+                    "id": readgroup,
+                    "reads": samples[sample][library][readgroup]
+                })
             sampleentry["libraries"].append(libraryentry)
         out["samples"].append(sampleentry)
     return out
@@ -56,20 +59,20 @@ def main(samplesheet):
                 lib = row[indices["library"]]
                 rg = row[indices["readgroup"]]
 
-            if not sample in samples.keys():
+            if sample not in samples.keys():
                 samples[sample] = {}
-            if not lib in samples[sample].keys():
+            if lib not in samples[sample].keys():
                 samples[sample][lib] = {}
             if rg in samples[sample][lib].keys():
                 raise ValueError("Duplicate readgroup id {}-{}-{}".format(
                     sample, lib, rg))
             samples[sample][lib][rg] = {
                 "R1": row[indices["R1"]],
-                "R1_md5": row[indices["R1_md5"]] if row[indices["R1_md5"]] != ""
-                    else None,
+                "R1_md5": (row[indices["R1_md5"]] if
+                           row[indices["R1_md5"]] != "" else None),
                 "R2": row[indices["R2"]],
-                "R2_md5": row[indices["R2_md5"]] if row[indices["R2_md5"]] != ""
-                    else None}
+                "R2_md5": (row[indices["R2_md5"]] if
+                           row[indices["R2_md5"]] != "" else None)}
 
     # output
     print(yaml.dump(reformat(samples), default_flow_style=False))
