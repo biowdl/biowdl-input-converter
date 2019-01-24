@@ -46,10 +46,14 @@ def main(samplesheet):
         indices, noreadgroup = getindexes(header)
         for row in reader:
             sample = row[indices["sample"]]
-            lib = row[indices["library"]]
+            # In legacy cases readgroups were labbeled libraries,
+            # proper libraries didn't exist, for the new format the are
+            # the same as samples.
             if noreadgroup:
-                rg = lib
+                lib = row[indices["sample"]]
+                rg = row[indices["library"]]
             else:
+                lib = sample
                 rg = row[indices["readgroup"]]
 
             if not sample in samples.keys():
