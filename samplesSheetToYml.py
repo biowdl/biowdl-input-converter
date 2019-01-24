@@ -53,7 +53,7 @@ def main(samplesheet):
                 lib = row[indices["sample"]]
                 rg = row[indices["library"]]
             else:
-                lib = sample
+                lib = row[indices["library"]]
                 rg = row[indices["readgroup"]]
 
             if not sample in samples.keys():
