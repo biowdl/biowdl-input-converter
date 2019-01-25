@@ -1,0 +1,17 @@
+samples:
+- id: s1
+  libraries:
+  - id: lib1
+    readgroups:
+    - id: rg1
+      reads:
+        R1: r1.fq
+        R2: r2.fq
+- id: s2
+  libraries:
+  - id: lib1
+    readgroups:
+    - id: rg1
+      reads:
+        R1: r1.fq
+        R2: r2.fq

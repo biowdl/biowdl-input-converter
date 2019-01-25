@@ -1,0 +1,21 @@
+samples:
+- id: s1
+  libraries:
+  - id: s1
+    readgroups:
+    - id: lib1
+      reads:
+        R1: r1.fq
+        R1_md5: hello
+        R2: r2.fq
+        R2_md5: hey
+- id: s2
+  libraries:
+  - id: s2
+    readgroups:
+    - id: lib1
+      reads:
+        R1: r1.fq
+        R1_md5: aa
+        R2: r2.fq
+        R2_md5: bb

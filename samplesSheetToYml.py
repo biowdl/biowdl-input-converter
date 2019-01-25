@@ -20,9 +20,14 @@ def getindexes(lst):
     return indices, noreadgroup
 
 
+def dropnone(dictionary):
+    return {k:v for k,v in dictionary.items() if v is not None}
+
+
 def reformat(samples):
     """
-    Format the dictionary according to the yaml format
+    Format the dictionary according to the yaml format.
+    None values are left out.
     """
     out = {"samples": []}
     for sample in samples:
@@ -32,7 +37,7 @@ def reformat(samples):
             for readgroup in samples[sample][library]:
                 libraryentry["readgroups"].append({
                     "id": readgroup,
-                    "reads": samples[sample][library][readgroup]
+                    "reads": dropnone(samples[sample][library][readgroup])
                 })
             sampleentry["libraries"].append(libraryentry)
         out["samples"].append(sampleentry)
@@ -75,7 +80,7 @@ def main(samplesheet):
                            row[indices["R2_md5"]] != "" else None)}
 
     # output
-    print(yaml.dump(reformat(samples), default_flow_style=False))
+    print(yaml.dump(reformat(samples), default_flow_style=False), end="")
 
 
 if __name__ == "__main__":
