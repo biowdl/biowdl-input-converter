@@ -47,7 +47,8 @@ def reformat(samples):
 def main(samplesheet):
     samples = {}
     with open(samplesheet, "r") as csvfile:
-        dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=";,\t")
+        dialect = csv.Sniffer().sniff("".join(
+            [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
         csvfile.seek(0)
         reader = csv.reader(csvfile, dialect)
         header = next(reader)
