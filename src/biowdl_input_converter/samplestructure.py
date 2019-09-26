@@ -34,12 +34,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import yaml
 
 @dataclass()
 class Node:
     """Generic code that is common between all Nodes"""
     id: str
-    additional_properties: Dict[str, Any]
 
 
 @dataclass()
@@ -67,13 +67,52 @@ class Library(Node):
     readgroups: List[ReadGroup]
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
+    def __iter__(self):
+        return iter(self.readgroups)
 
 @dataclass()
 class Sample(Node):
     libraries: List[Library]
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
+    def __iter__(self):
+        return iter(self.libraries)
 
 @dataclass()
 class SampleGroup:
     samples: List[Sample]
+
+    def __iter__(self):
+        return iter(self.samples)
+
+    @classmethod
+    def from_yaml(cls, yaml_file: Path):
+        with yaml_file.open("r") as yaml_h:
+            samplesheet_dict = yaml.safe_load(yaml_h)
+
+        samples = []
+        for sample in samplesheet_dict["samples"]:
+            libraries = []
+            for library in sample.pop("libraries"):
+                readgroups = []
+                for readgroup in library.pop("readgroups"):  # type: Dict[str, Any]
+                    read_struct = readgroup.pop("reads")  # type: Dict[str, str]
+                    readgroups.append(ReadGroup(
+                        id=readgroup.pop("id"),
+                        R1=Path(read_struct.pop("R1")),
+                        R1_md5=read_struct.pop("R1_md5", None),
+                        R2=Path(read_struct.pop("R2")),
+                        R2_md5=read_struct.pop("R2_md5"),
+                        additional_properties=readgroup
+                    ))
+                libraries.append(Library(
+                    id=library.pop("id"),
+                    readgroups=readgroups,
+                    additional_properties=library
+                ))
+            samples.append(Sample(
+                id=sample.pop("id"),
+                libraries=libraries,
+                additional_properties=sample
+            ))
+        return SampleGroup(samples)
