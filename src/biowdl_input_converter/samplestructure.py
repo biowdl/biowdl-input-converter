@@ -71,6 +71,9 @@ class Library(Node):
     def __iter__(self):
         return iter(self.readgroups)
 
+    def __getitem__(self, item: int):
+        return self.readgroups[item]
+
 
 @dataclass()
 class Sample(Node):
@@ -80,6 +83,8 @@ class Sample(Node):
     def __iter__(self):
         return iter(self.libraries)
 
+    def __getitem__(self, item: int):
+        return self.libraries[item]
 
 @dataclass()
 class SampleGroup:
@@ -87,6 +92,9 @@ class SampleGroup:
 
     def __iter__(self):
         return iter(self.samples)
+
+    def __getitem__(self, item: int):
+        return self.samples[item]
 
     @classmethod
     def from_yaml(cls, yaml_file: Path):
