@@ -1,6 +1,8 @@
-import csv
 import argparse
+import csv
 from pathlib import Path
+from typing import Any, Dict
+
 import yaml
 
 
@@ -44,7 +46,7 @@ def reformat(samples):
 
 
 def samplesheet_to_yaml(samplesheet_file: Path):
-    samples = {}
+    samples = {}  # type: Dict[str, Any]
     with samplesheet_file.open("r") as csvfile:
         dialect = csv.Sniffer().sniff("".join(
             [csvfile.readline() for _ in range(10)]), delimiters=";,\t")

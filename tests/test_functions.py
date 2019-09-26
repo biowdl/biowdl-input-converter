@@ -1,8 +1,9 @@
 from pathlib import Path
 
-import pytest
-from biowdl_input_converter import getindexes, dropnone, reformat, \
+from biowdl_input_converter import dropnone, getindexes, reformat, \
     samplesheet_to_yaml
+
+import pytest
 
 filesdir = Path(__file__).parent / Path("files")
 
@@ -37,7 +38,7 @@ def test_reformat():
                 {"id": "rg1", "reads": {
                     "R1": "r1.fq", "R1_md5": ":3", "R2": "r2.fq",
                     "R2_md5": ":p"}
-                },{"id": "rg2", "reads": {
+                 }, {"id": "rg2", "reads": {
                     "R1": "r3.fq", "R1_md5": ":O", "R2": "r4.fq",
                     "R2_md5": ":X"}}]}]},
         {"id": "s2", "libraries": [
@@ -50,15 +51,15 @@ def test_reformat():
                     "R1": "r7.fq", "R2": "r8.fq"}}]}]}]}
     testdict = {
         "s1": {"lib1": {"rg1": {
-                "R1": "r1.fq", "R1_md5": ":3", "R2": "r2.fq", "R2_md5": ":p"},
+            "R1": "r1.fq", "R1_md5": ":3", "R2": "r2.fq", "R2_md5": ":p"},
             "rg2": {
                 "R1": "r3.fq", "R1_md5": ":O", "R2": "r4.fq",
                 "R2_md5": ":X"}}},
         "s2": {"lib2": {"rg3": {
-                "R1": "r5.fq", "R1_md5": ":)", "R2": "r6.fq", "R2_md5": ":("}},
-            "lib3": { "rg4": {
+            "R1": "r5.fq", "R1_md5": ":)", "R2": "r6.fq", "R2_md5": ":("}},
+            "lib3": {"rg4": {
                 "R1": "r7.fq", "R1_md5": None, "R2": "r8.fq",
-                    "R2_md5": None}}}}
+                "R2_md5": None}}}}
     assert reformat(testdict) == result
 
 
@@ -72,14 +73,16 @@ def test_main_comma_complete():
 def test_main_semicolon_without_md5():
     with (Path(filesdir) / Path("without_md5.yml")).open() as f:
         result = f.read()
-    yaml_string = samplesheet_to_yaml((Path(filesdir) / Path("without_md5.csv")))
+    yaml_string = samplesheet_to_yaml(
+        (Path(filesdir) / Path("without_md5.csv")))
     assert yaml_string == result
 
 
 def test_main_tab_without_readgroup():
     with (Path(filesdir) / Path("without_readgroup.yml")).open() as f:
         result = f.read()
-    yaml_string = samplesheet_to_yaml((Path(filesdir) / Path("without_readgroup.tsv")))
+    yaml_string = samplesheet_to_yaml(
+        (Path(filesdir) / Path("without_readgroup.tsv")))
     assert yaml_string == result
 
 
