@@ -1,15 +1,21 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass()
-class ReadGroup:
+class Node:
     id: str
+    additional_properties: Dict[str, Any]
+
+
+@dataclass()
+class ReadGroup(Node):
     R1: Path
     R2: Optional[Path] = None
     R1_md5: Optional[str] = None
     R2_md5: Optional[str] = None
+    additional_properties: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.R1.exists():
@@ -20,15 +26,15 @@ class ReadGroup:
 
 
 @dataclass()
-class Library:
-    id: str
+class Library(Node):
     readgroups: List[ReadGroup]
+    additional_properties: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass()
-class Sample:
-    id: str
+class Sample(Node):
     libraries: List[Library]
+    additional_properties: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass()
