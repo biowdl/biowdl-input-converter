@@ -45,7 +45,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
     ],
-    python_requires=">=3.6",  # Because we use modern class constructors.
+    python_requires=">=3.7",  # Because of dataclasses
     install_requires=[
         "pyyaml",
         "jsonschema"
