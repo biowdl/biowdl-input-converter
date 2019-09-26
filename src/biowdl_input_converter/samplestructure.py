@@ -34,8 +34,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml
-
 
 @dataclass()
 class Node:
@@ -86,6 +84,7 @@ class Sample(Node):
     def __getitem__(self, item: int):
         return self.libraries[item]
 
+
 @dataclass()
 class SampleGroup:
     samples: List[Sample]
@@ -95,44 +94,3 @@ class SampleGroup:
 
     def __getitem__(self, item: int):
         return self.samples[item]
-
-    @classmethod
-    def from_yaml(cls, yaml_file: Path):
-        """
-        Converts BioWDL samplesheets to SampleGroup
-        :param yaml_file: Path to a yaml file
-        :return: a SampleGroup class
-        """
-        with yaml_file.open("r") as yaml_h:
-            samplesheet_dict = yaml.safe_load(yaml_h)
-
-        # We iterate through all levels of the dictionary here. pop() is used
-        # here because it removes properties we know exist. Additional
-        # properties remain. These are added as is.
-        samples = []
-        for sample in samplesheet_dict["samples"]:  # type: Dict[str, Any]
-            libraries = []
-            for library in sample.pop("libraries"):  # type: Dict[str, Any]
-                readgroups = []
-                for readgroup in library.pop("readgroups"):  # type: Dict[str, Any]  # noqa: E501
-                    read_struct = readgroup.pop("reads")  # type: Dict[str, str]  # noqa: E501
-                    readgroups.append(ReadGroup(
-                        id=readgroup.pop("id"),
-                        R1=Path(read_struct.pop("R1")),
-                        R1_md5=read_struct.pop("R1_md5", None),
-                        R2=Path(read_struct.pop("R2")),
-                        R2_md5=read_struct.pop("R2_md5"),
-                        additional_properties=readgroup
-                    ))
-                libraries.append(Library(
-                    id=library.pop("id"),
-                    readgroups=readgroups,
-                    additional_properties=library
-                ))
-            samples.append(Sample(
-                id=sample.pop("id"),
-                libraries=libraries,
-                additional_properties=sample
-            ))
-
-        return SampleGroup(samples)
