@@ -1,7 +1,6 @@
 import csv
 import argparse
-
-
+from pathlib import Path
 import yaml
 
 
@@ -44,9 +43,9 @@ def reformat(samples):
     return out
 
 
-def samplesheet_to_yaml(samplesheet):
+def samplesheet_to_yaml(samplesheet_file: Path):
     samples = {}
-    with open(samplesheet, "r") as csvfile:
+    with samplesheet_file.open("r") as csvfile:
         dialect = csv.Sniffer().sniff("".join(
             [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
         csvfile.seek(0)
@@ -88,7 +87,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("samplesheet")
     args = parser.parse_args()
-    yaml_string = samplesheet_to_yaml(args.samplesheet)
+    yaml_string = samplesheet_to_yaml(Path(args.samplesheet))
     print(yaml_string, end="")
 
 

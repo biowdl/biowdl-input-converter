@@ -1,10 +1,8 @@
-import sys
 from pathlib import Path
 
 import pytest
-
-from samplesSheetToYml import getindexes, dropnone, reformat, main
-
+from biowdl_input_converter import getindexes, dropnone, reformat, \
+    samplesheet_to_yaml
 
 filesdir = Path(__file__).parent / Path("files")
 
@@ -64,33 +62,27 @@ def test_reformat():
     assert reformat(testdict) == result
 
 
-def test_main_comma_complete(capsys):
+def test_main_comma_complete():
     with (Path(filesdir) / Path("complete.yml")).open() as f:
         result = f.read()
-    main((Path(filesdir) / Path("complete.csv").__str__()))
-    out, err = capsys.readouterr()
-    assert out == result
-    assert err == ""
+    yaml_string = samplesheet_to_yaml(Path(filesdir) / Path("complete.csv"))
+    assert yaml_string == result
 
 
-def test_main_semicolon_without_md5(capsys):
+def test_main_semicolon_without_md5():
     with (Path(filesdir) / Path("without_md5.yml")).open() as f:
         result = f.read()
-    main((Path(filesdir) / Path("without_md5.csv").__str__()))
-    out, err = capsys.readouterr()
-    assert out == result
-    assert err == ""
+    yaml_string = samplesheet_to_yaml((Path(filesdir) / Path("without_md5.csv")))
+    assert yaml_string == result
 
 
-def test_main_tab_without_readgroup(capsys):
+def test_main_tab_without_readgroup():
     with (Path(filesdir) / Path("without_readgroup.yml")).open() as f:
         result = f.read()
-    main((Path(filesdir) / Path("without_readgroup.tsv").__str__()))
-    out, err = capsys.readouterr()
-    assert out == result
-    assert err == ""
+    yaml_string = samplesheet_to_yaml((Path(filesdir) / Path("without_readgroup.tsv")))
+    assert yaml_string == result
 
 
-def test_main_missing_field(capsys):
+def test_main_missing_field():
     with pytest.raises(ValueError):
-        main((Path(filesdir) / Path("missing_field.csv").__str__()))
+        samplesheet_to_yaml((Path(filesdir) / Path("missing_field.csv")))
