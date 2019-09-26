@@ -103,14 +103,16 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
         if rg in samples[sample][lib].keys():
             raise ValueError("Duplicate readgroup id {}-{}-{}".format(
                 sample, lib, rg))
+        read1_md5 = row_dict.pop("R1_md5")
+        read2_md5 = row_dict.pop("R2_md5")
         samples[sample][lib][rg] = {
-            "R1": "R1",
-            "R1_md5": (row[indices["R1_md5"]] if
-                       row[indices["R1_md5"]] != "" else None),
-            "R2": row[indices["R2"]],
-            "R2_md5": (row[indices["R2_md5"]] if
-                       row[indices["R2_md5"]] != "" else None)}
+            "R1": row_dict.pop("R1"),
+            "R1_md5": read1_md5 if read1_md5 != "" else None,
+            "R2": row_dict.pop("R2"),
+            "R2_md5": read2_md5 if read2_md5 != "" else None
+        }
+        # Add all remaining properties
+        for key, value in row_dict.items():
+            samples[sample][lib][rg][key] = value if value != "" else None
 
-    # output
-    return yaml.safe_dump(reformat(samples), default_flow_style=False)
-    pass
+        return SampleGroup.from_dict_of_dicts(samples)
