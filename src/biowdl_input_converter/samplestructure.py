@@ -22,8 +22,12 @@
 Create a fixed sample structure that can be used as a stable intermediate
 between conversions. This way we don't have to write any to any conversions.
 
-Dataclasses are used to create this structure. See this excellent talk on
-dataclasses: https://www.youtube.com/watch?v=T-TwcmT6Rcw for more information.
+Dataclasses are used to create this structure. Dataclasses generate an
+__init__, __repr__, __eq__ and more for you. They make writing this module
+easier.
+See this excellent talk on dataclasses,
+https://www.youtube.com/watch?v=T-TwcmT6Rcw, or the python docs,
+https://docs.python.org/3/library/dataclasses.html, for more information.
 """
 
 from dataclasses import dataclass, field
