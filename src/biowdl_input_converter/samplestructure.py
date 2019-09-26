@@ -18,6 +18,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Create a fixed sample structure that can be used as a stable intermediate
+between conversions. This way we don't have to write any to any conversions.
+
+Dataclasses are used to create this structure. See this excellent talk on
+dataclasses: https://www.youtube.com/watch?v=T-TwcmT6Rcw for more information.
+"""
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -25,6 +33,7 @@ from typing import Any, Dict, List, Optional
 
 @dataclass()
 class Node:
+    """Generic code that is common between all Nodes"""
     id: str
     additional_properties: Dict[str, Any]
 
@@ -35,9 +44,13 @@ class ReadGroup(Node):
     R2: Optional[Path] = None
     R1_md5: Optional[str] = None
     R2_md5: Optional[str] = None
+    # We need to define additional_properties again because the order in
+    # dataclasses is determined by order in the code.
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
+        """Check if files exist.
+        This method is activated after the generated init."""
         if not self.R1.exists():
             raise FileNotFoundError(str(self.R1))
         if self.R2 is not None:
