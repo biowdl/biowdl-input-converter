@@ -94,7 +94,7 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
             rg = row_dict.pop("readgroup")
         else:
             lib = sample
-            rg = row_dict.pop("readgroup")
+            rg = row_dict.pop("library")
         if sample not in samples.keys():
             samples[sample] = {}
 

@@ -31,7 +31,6 @@ https://docs.python.org/3/library/dataclasses.html, for more information.
 """
 
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
@@ -43,22 +42,11 @@ class Node:
 
 @dataclass()
 class ReadGroup(Node):
-    R1: Path
-    R2: Optional[Path] = None
+    R1: str
+    R2: Optional[str] = None
     R1_md5: Optional[str] = None
     R2_md5: Optional[str] = None
-    # We need to define additional_properties again because the order in
-    # dataclasses is determined by order in the code.
     additional_properties: Dict[str, Any] = field(default_factory=dict)
-
-    def __post_init__(self):
-        """Check if files exist.
-        This method is activated after the generated init."""
-        if not self.R1.exists():
-            raise FileNotFoundError(str(self.R1))
-        if self.R2 is not None:
-            if not self.R2.exists():
-                raise FileNotFoundError(str(self.R2))
 
 
 @dataclass()
@@ -100,9 +88,9 @@ class SampleGroup:
         samples = []
         for sample_id, sample_dict in dict_of_dicts.items():
             libraries = []
-            for lib_id, lib_dict in sample_dict.pop("libraries"):
+            for lib_id, lib_dict in sample_dict.items():
                 readgroups = []
-                for rg_id, rg_dict in lib_dict.pop("readgroups"):
+                for rg_id, rg_dict in lib_dict.items():
                     readgroups.append(ReadGroup(
                         id=rg_id,
                         R1=rg_dict.pop("R1"),
