@@ -115,4 +115,4 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
         for key, value in row_dict.items():
             samples[sample][lib][rg][key] = value if value != "" else None
 
-        return SampleGroup.from_dict_of_dicts(samples)
+    return SampleGroup.from_dict_of_dicts(samples)
