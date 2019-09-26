@@ -60,7 +60,6 @@ class ReadGroup(Node):
             if not self.R2.exists():
                 raise FileNotFoundError(str(self.R2))
 
-
 @dataclass()
 class Library(Node):
     readgroups: List[ReadGroup]
@@ -94,3 +93,31 @@ class SampleGroup:
 
     def __getitem__(self, item: int):
         return self.samples[item]
+
+    @classmethod
+    def from_dict_of_dicts(cls, dict_of_dicts: Dict[str, Any]):
+        samples = []
+        for sample_id, sample_dict in dict_of_dicts.items():
+            libraries = []
+            for lib_id, lib_dict in sample_dict.pop("libraries"):
+                readgroups = []
+                for rg_id, rg_dict in lib_dict.pop("readgroups"):
+                    readgroups.append(ReadGroup(
+                        id=rg_id,
+                        R1=rg_dict.pop("R1"),
+                        R1_md5=rg_dict.pop("R1_md5", None),
+                        R2=rg_dict.pop("R2", None),
+                        R2_md5=rg_dict.pop("R2_md5", None),
+                        additional_properties=rg_dict
+                    ))
+                libraries.append(Library(
+                    id=lib_id,
+                    readgroups=readgroups,
+                    additional_properties=lib_dict
+                ))
+            samples.append(Sample(
+                id=sample_id,
+                libraries=libraries,
+                additional_properties=sample_dict
+            ))
+        return SampleGroup(samples)
