@@ -21,7 +21,7 @@ def getindexes(lst):
 
 
 def dropnone(dictionary):
-    return {k:v for k,v in dictionary.items() if v is not None}
+    return {k: v for k, v in dictionary.items() if v is not None}
 
 
 def reformat(samples):
@@ -44,7 +44,7 @@ def reformat(samples):
     return out
 
 
-def main(samplesheet):
+def samplesheet_to_yaml(samplesheet):
     samples = {}
     with open(samplesheet, "r") as csvfile:
         dialect = csv.Sniffer().sniff("".join(
@@ -81,11 +81,16 @@ def main(samplesheet):
                            row[indices["R2_md5"]] != "" else None)}
 
     # output
-    print(yaml.dump(reformat(samples), default_flow_style=False), end="")
+    return yaml.safe_dump(reformat(samples), default_flow_style=False)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("samplesheet")
     args = parser.parse_args()
-    main(args.samplesheet)
+    yaml_string = samplesheet_to_yaml(args.samplesheet)
+    print(yaml_string, end="")
+
+
+if __name__ == "__main__":
+    main()
