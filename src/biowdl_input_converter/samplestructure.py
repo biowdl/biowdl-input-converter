@@ -36,6 +36,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
+
 @dataclass()
 class Node:
     """Generic code that is common between all Nodes"""
@@ -70,6 +71,7 @@ class Library(Node):
     def __iter__(self):
         return iter(self.readgroups)
 
+
 @dataclass()
 class Sample(Node):
     libraries: List[Library]
@@ -77,6 +79,7 @@ class Sample(Node):
 
     def __iter__(self):
         return iter(self.libraries)
+
 
 @dataclass()
 class SampleGroup:
@@ -87,16 +90,24 @@ class SampleGroup:
 
     @classmethod
     def from_yaml(cls, yaml_file: Path):
+        """
+        Converts BioWDL samplesheets to SampleGroup
+        :param yaml_file: Path to a yaml file
+        :return: a SampleGroup class
+        """
         with yaml_file.open("r") as yaml_h:
             samplesheet_dict = yaml.safe_load(yaml_h)
 
+        # We iterate through all levels of the dictionary here. pop() is used
+        # here because it removes properties we know exist. Additional
+        # properties remain. These are added as is.
         samples = []
-        for sample in samplesheet_dict["samples"]:
+        for sample in samplesheet_dict["samples"]:  # type: Dict[str, Any]
             libraries = []
-            for library in sample.pop("libraries"):
+            for library in sample.pop("libraries"):  # type: Dict[str, Any]
                 readgroups = []
-                for readgroup in library.pop("readgroups"):  # type: Dict[str, Any]
-                    read_struct = readgroup.pop("reads")  # type: Dict[str, str]
+                for readgroup in library.pop("readgroups"):  # type: Dict[str, Any]  # noqa: E501
+                    read_struct = readgroup.pop("reads")  # type: Dict[str, str]  # noqa: E501
                     readgroups.append(ReadGroup(
                         id=readgroup.pop("id"),
                         R1=Path(read_struct.pop("R1")),
@@ -115,4 +126,5 @@ class SampleGroup:
                 libraries=libraries,
                 additional_properties=sample
             ))
+
         return SampleGroup(samples)
