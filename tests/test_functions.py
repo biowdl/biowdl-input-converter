@@ -31,5 +31,6 @@ def test_main_tab_without_readgroup():
 
 
 def test_main_missing_field():
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError) as e:
         samplesheet_to_yaml((Path(filesdir) / Path("missing_field.csv")))
+    e.match("sample")

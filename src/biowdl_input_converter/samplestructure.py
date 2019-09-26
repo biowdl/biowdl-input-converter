@@ -93,20 +93,23 @@ class SampleGroup:
                 for rg_id, rg_dict in lib_dict.items():
                     readgroups.append(ReadGroup(
                         id=rg_id,
-                        R1=rg_dict.pop("R1"),
-                        R1_md5=rg_dict.pop("R1_md5", None),
-                        R2=rg_dict.pop("R2", None),
-                        R2_md5=rg_dict.pop("R2_md5", None),
-                        additional_properties=rg_dict
+                        R1=rg_dict["R1"],
+                        R1_md5=rg_dict.get("R1_md5", None),
+                        R2=rg_dict.get("R2", None),
+                        R2_md5=rg_dict.get("R2_md5", None),
+                        additional_properties=rg_dict.get(
+                            "additional_properties", {})
                     ))
                 libraries.append(Library(
                     id=lib_id,
                     readgroups=readgroups,
-                    additional_properties=lib_dict
+                    additional_properties=lib_dict.get(
+                        "additional_properties", {})
                 ))
             samples.append(Sample(
                 id=sample_id,
                 libraries=libraries,
-                additional_properties=sample_dict
+                additional_properties=sample_dict.get(
+                    "additional_properties", {})
             ))
         return SampleGroup(samples)
