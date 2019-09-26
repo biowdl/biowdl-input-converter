@@ -17,9 +17,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import csv
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Generator, List
 
 import yaml
 
@@ -69,5 +69,48 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
     return SampleGroup(samples)
 
 
-def samplesheet_csv_to_samplegroup():
+def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, None]:  # noqa: E501
+    with csv_file.open("r") as csvfile:
+        dialect = csv.Sniffer().sniff("".join(
+            [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        header = next(reader)
+        for row in reader:
+            row_dict = {heading: row[index]
+                        for index, heading in enumerate(header)}
+            yield row_dict
+
+
+def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
+    samples = {}  # type: Dict[str, Any]
+    for row_dict in csv_to_dict_generator(samplesheet_file):
+        sample = row_dict.pop("sample")
+        # In legacy cases readgroups were labbeled libraries,
+        # proper libraries didn't exist, for the new format the are
+        # the same as samples.
+        if "readgroup" in row_dict.keys():
+            lib = row_dict.pop("library")
+            rg = row_dict.pop("readgroup")
+        else:
+            lib = sample
+            rg = row_dict.pop("readgroup")
+        if sample not in samples.keys():
+            samples[sample] = {}
+
+        if lib not in samples[sample].keys():
+            samples[sample][lib] = {}
+        if rg in samples[sample][lib].keys():
+            raise ValueError("Duplicate readgroup id {}-{}-{}".format(
+                sample, lib, rg))
+        samples[sample][lib][rg] = {
+            "R1": "R1",
+            "R1_md5": (row[indices["R1_md5"]] if
+                       row[indices["R1_md5"]] != "" else None),
+            "R2": row[indices["R2"]],
+            "R2_md5": (row[indices["R2_md5"]] if
+                       row[indices["R2_md5"]] != "" else None)}
+
+    # output
+    return yaml.safe_dump(reformat(samples), default_flow_style=False)
     pass
