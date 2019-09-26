@@ -19,7 +19,7 @@
 # SOFTWARE.
 import csv
 from pathlib import Path
-from typing import Any, Dict, Generator, List
+from typing import Any, Dict, Generator
 
 import yaml
 

@@ -60,6 +60,7 @@ class ReadGroup(Node):
             if not self.R2.exists():
                 raise FileNotFoundError(str(self.R2))
 
+
 @dataclass()
 class Library(Node):
     readgroups: List[ReadGroup]
