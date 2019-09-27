@@ -150,7 +150,7 @@ def test_file_md5sums():
     samplegroup.test_file_checksums()
 
 
-def test_file_not_exist():
+def test_read1_not_exist():
     reads_dir = (Path(FILESDIR) / Path("data")).absolute()
     readgroup = ReadGroup(
         id="r1",
@@ -164,7 +164,21 @@ def test_file_not_exist():
     assert error.match("R3.fq")
 
 
-def test_incorrect_md5sum():
+def test_read2_not_exist():
+    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
+    readgroup = ReadGroup(
+        id="r1",
+        R1=str(reads_dir / Path("R1.fq")),
+        R2=str(reads_dir / Path("R3.fq")),
+        R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
+        R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
+    )
+    with pytest.raises(FileNotFoundError) as error:
+        readgroup.test_files_exist()
+    assert error.match("R3.fq")
+
+
+def test_incorrect_md5sum_r1():
     reads_dir = (Path(FILESDIR) / Path("data")).absolute()
     readgroup = ReadGroup(
         id="r1",
@@ -176,3 +190,17 @@ def test_incorrect_md5sum():
     with pytest.raises(ValueError) as error:
         readgroup.test_file_checksums()
     assert error.match("tests/files/data/R1.fq")
+
+
+def test_incorrect_md5sum_r2():
+    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
+    readgroup = ReadGroup(
+        id="r1",
+        R1=str(reads_dir / Path("R1.fq")),
+        R2=str(reads_dir / Path("R2.fq")),
+        R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
+        R2_md5="incorrect_md5sum"
+    )
+    with pytest.raises(ValueError) as error:
+        readgroup.test_file_checksums()
+    assert error.match("tests/files/data/R2.fq")
