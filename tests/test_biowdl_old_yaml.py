@@ -50,18 +50,50 @@ COMPLETE_WITH_CONTROL_SAMPLEGROUP = SampleGroup([
                 R2_md5="bb"
             )])])])
 
+WITHOUT_MD5_SAMPLEGROUP = SampleGroup([
+    Sample(id="s1", libraries=[
+        Library(id="lib1", readgroups=[
+            ReadGroup(
+                id="rg1",
+                R1="r1.fq",
+                R2="r2.fq",
+            )])]),
+    Sample(id="s2", libraries=[
+        Library(id="lib1", readgroups=[
+            ReadGroup(
+                id="rg1",
+                R1="r1.fq",
+                R2="r2.fq",
+            )])])])
 
-def test_import_biowdl_old_yaml():
+
+def test_import_biowdl_old_yaml_all_fields():
     samplegroup = biowdl_yaml_to_samplegroup(
         FILESDIR / Path("complete_with_control.yml"))
     assert COMPLETE_WITH_CONTROL_SAMPLEGROUP == samplegroup
 
 
-def test_export_biowdl_old_yaml():
+def test_export_biowdl_old_yaml_all_fields():
     with (FILESDIR / Path("complete_with_control.yml")).open("r") as yaml_h:
         yaml_contents = yaml_h.read()
     yaml_exported = samplegroup_to_biowdl_old_yaml(
         COMPLETE_WITH_CONTROL_SAMPLEGROUP)
+    # Load the yamls to assure they are functionally equivalent regardless of
+    # order
+    assert yaml.safe_load(yaml_exported) == yaml.safe_load(yaml_contents)
+
+
+def test_import_biowdl_no_props_no_md5():
+    samplegroup = biowdl_yaml_to_samplegroup(
+        FILESDIR / Path("without_md5.yml"))
+    assert WITHOUT_MD5_SAMPLEGROUP == samplegroup
+
+
+def test_export_biowdl_no_props_no_md5():
+    with (FILESDIR / Path("without_md5.yml")).open("r") as yaml_h:
+        yaml_contents = yaml_h.read()
+    yaml_exported = samplegroup_to_biowdl_old_yaml(
+        WITHOUT_MD5_SAMPLEGROUP)
     # Load the yamls to assure they are functionally equivalent regardless of
     # order
     assert yaml.safe_load(yaml_exported) == yaml.safe_load(yaml_contents)
