@@ -21,6 +21,7 @@
 import argparse
 import sys
 from pathlib import Path
+from typing import Optional
 
 from . import input_conversions, output_conversions
 
@@ -46,17 +47,39 @@ def argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def samplesheet_to_yaml(input_file: Path):
-    samplesheet = input_conversions.samplesheet_csv_to_samplegroup(input_file)
-    return output_conversions.samplegroup_to_biowdl_old_yaml(samplesheet)
+def samplesheet_to_json(samplesheet: str,
+                        output: Optional[str] = None,
+                        old_style_json: bool = False,
+                        file_presence_check: bool = True,
+                        file_md5_check: bool = False) -> None:
+    samplesheet_path = Path(samplesheet)
+
+    if samplesheet_path.suffix in [".tsv", ".csv"]:
+        samplegroup = input_conversions.samplesheet_csv_to_samplegroup(
+            samplesheet_path)
+    # JSON can also be parsed by a YAML parser.
+    elif samplesheet_path.suffix in [".yaml", ".yml", ".json"]:
+        samplegroup = input_conversions.biowdl_yaml_to_samplegroup(
+            samplesheet_path)
+    else:
+        raise NotImplementedError(
+            f"Unknown extension: {samplesheet_path.suffix}")
+
+    if old_style_json:
+        output_json = output_conversions.samplegroup_to_biowdl_old_json(
+            samplegroup)
+    else:
+        output_json = output_conversions.samplegroup_to_biowdl_new_json(
+            samplegroup)
+
+    with open(output or sys.stdout, "w") as output_h:
+        output_h.write(output_json)
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("samplesheet")
+    parser = argument_parser()
     args = parser.parse_args()
-    yaml_string = samplesheet_to_yaml(Path(args.samplesheet))
-    print(yaml_string, end="")
+    samplesheet_to_json(args.samplesheet)
 
 
 if __name__ == "__main__":
