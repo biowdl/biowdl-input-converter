@@ -19,9 +19,20 @@
 # SOFTWARE.
 
 import argparse
+import sys
 from pathlib import Path
 
 from . import input_conversions, output_conversions
+
+
+def argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("samplesheet", type=str)
+    parser.add_argument("-o", "--output", default=sys.stdout)
+    parser.add_argument("--old", action="store_false", dest="new_style_json",
+                        help="Output old style JSON as used in BioWDL "
+                             "germline-DNA and RNA-seq version 1 pipelines")
+    return parser
 
 
 def samplesheet_to_yaml(input_file: Path):
