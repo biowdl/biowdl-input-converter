@@ -47,8 +47,7 @@ setup(
     ],
     python_requires=">=3.7",  # Because of dataclasses
     install_requires=[
-        "pyyaml",
-        "jsonschema"
+        "pyyaml"
     ],
     entry_points={"console_scripts": [
         "biowdl-input-converter = biowdl_input_converter:main"]}
