@@ -74,8 +74,15 @@ def samplegroup_to_biowdl_new_structure(samplegroup: SampleGroup):
     samples = []
     for sample in samplegroup:
         sample_dict = {"readgroups": [], "id": sample.id}
+        sample_dict.update(sample.additional_properties)
         for library in sample:
             for readgroup in library:
-                rg_dict = {"id": readgroup.id,
-                           "lib_id": library.id,
-                           "R1": readgroup.R1}
+                rg_dict = readgroup.as_dict()
+                rg_dict["lib_id"] = library.id
+                sample_dict["readgroups"].append(rg_dict)
+        samples.append(sample_dict)
+    return {"samples": samples}
+
+
+def samplegroup_to_biowdl_new_json(samplegroup: SampleGroup) -> str:
+    return json.dumps(samplegroup_to_biowdl_new_structure(samplegroup))

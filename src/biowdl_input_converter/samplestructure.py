@@ -35,22 +35,29 @@ from typing import Any, Dict, List, Optional
 
 
 @dataclass()
-class Node:
-    """Generic code that is common between all Nodes"""
+class ReadGroup():
     id: str
-
-
-@dataclass()
-class ReadGroup(Node):
     R1: str
     R2: Optional[str] = None
     R1_md5: Optional[str] = None
     R2_md5: Optional[str] = None
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
+    def as_dict(self):
+        rg_dict = {"id": self.id, "R1": self.R1}
+        rg_dict.update(self.additional_properties)
+        if self.R1_md5 is not None:
+            rg_dict["R1_md5"] = self.R1_md5
+        if self.R2 is not None:
+            rg_dict["R2"] = self.R2
+        if self.R2_md5 is not None:
+            rg_dict["R2_md5"] = self.R2_md5
+        return rg_dict
+
 
 @dataclass()
-class Library(Node):
+class Library():
+    id: str
     readgroups: List[ReadGroup] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
@@ -65,7 +72,8 @@ class Library(Node):
 
 
 @dataclass()
-class Sample(Node):
+class Sample():
+    id: str
     libraries: List[Library] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 

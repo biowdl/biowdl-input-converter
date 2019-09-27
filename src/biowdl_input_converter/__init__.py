@@ -26,7 +26,7 @@ from . import input_conversions, output_conversions
 
 def samplesheet_to_yaml(input_file: Path):
     samplesheet = input_conversions.samplesheet_csv_to_samplegroup(input_file)
-    return output_conversions.samplegroup_to_biowdl_yaml(samplesheet)
+    return output_conversions.samplegroup_to_biowdl_old_yaml(samplesheet)
 
 
 def main():
