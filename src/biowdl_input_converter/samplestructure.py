@@ -51,7 +51,7 @@ class ReadGroup(Node):
 
 @dataclass()
 class Library(Node):
-    readgroups: List[ReadGroup]
+    readgroups: List[ReadGroup] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
     def __iter__(self):
@@ -60,10 +60,13 @@ class Library(Node):
     def __getitem__(self, item: int):
         return self.readgroups[item]
 
+    def append_readgroup(self, readgroup: ReadGroup):
+        self.readgroups.append(readgroup)
+
 
 @dataclass()
 class Sample(Node):
-    libraries: List[Library]
+    libraries: List[Library] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
     def __iter__(self):
@@ -72,10 +75,12 @@ class Sample(Node):
     def __getitem__(self, item: int):
         return self.libraries[item]
 
+    def append_library(self, library: Library):
+        self.libraries.append(library)
 
 @dataclass()
 class SampleGroup:
-    samples: List[Sample]
+    samples: List[Sample] = field(default_factory=list)
 
     def __iter__(self):
         return iter(self.samples)
@@ -83,15 +88,27 @@ class SampleGroup:
     def __getitem__(self, item: int):
         return self.samples[item]
 
+    def append_sample(self, sample: Sample):
+        self.samples.append(sample)
+
     @classmethod
     def from_dict_of_dicts(cls, dict_of_dicts: Dict[str, Any]):
-        samples = []
+        samplegroup = SampleGroup()
+        # Additional properties are popped, so they are no longer part of
+        # items in the dictionaries.
         for sample_id, sample_dict in dict_of_dicts.items():
-            libraries = []
+            sample = Sample(
+                sample_id,
+            additional_properties = sample_dict.pop(
+                "additional_properties", {}))
             for lib_id, lib_dict in sample_dict.items():
-                readgroups = []
+                library = Library(
+                    lib_id,
+                    additional_properties=lib_dict.pop(
+                        "additional_properties", {})
+                )
                 for rg_id, rg_dict in lib_dict.items():
-                    readgroups.append(ReadGroup(
+                    library.append_readgroup(ReadGroup(
                         id=rg_id,
                         R1=rg_dict["R1"],
                         R1_md5=rg_dict.get("R1_md5", None),
@@ -100,16 +117,6 @@ class SampleGroup:
                         additional_properties=rg_dict.get(
                             "additional_properties", {})
                     ))
-                libraries.append(Library(
-                    id=lib_id,
-                    readgroups=readgroups,
-                    additional_properties=lib_dict.get(
-                        "additional_properties", {})
-                ))
-            samples.append(Sample(
-                id=sample_id,
-                libraries=libraries,
-                additional_properties=sample_dict.get(
-                    "additional_properties", {})
-            ))
-        return SampleGroup(samples)
+                sample.append_library(library)
+            samplegroup.append_sample(sample)
+        return samplegroup
