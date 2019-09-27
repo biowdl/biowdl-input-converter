@@ -32,10 +32,13 @@ def samplegroup_to_biowdl_yaml(samplegroup: SampleGroup):
             for readgroup in library:
                 reads = {
                     "R1": readgroup.R1,
-                    "R1_md5": readgroup.R1_md5,
-                    "R2": readgroup.R2,
-                    "R2_md5": readgroup.R2_md5,
                 }
+                if readgroup.R1_md5 is not None:
+                    reads["R1_md5"] = readgroup.R1_md5
+                if readgroup.R2 is not None:
+                    reads["R2"] = readgroup.R2
+                if readgroup.R2_md5 is not None:
+                    reads["R2_md5"] = readgroup.R2_md5
                 readgroup_dict = {
                     "reads": reads,
                     "id": readgroup.id
