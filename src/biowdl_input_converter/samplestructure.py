@@ -31,7 +31,10 @@ https://docs.python.org/3/library/dataclasses.html, for more information.
 """
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from .utils import file_md5sum
 
 
 @dataclass()
@@ -65,6 +68,27 @@ class ReadGroup:
             rg_dict["R2_md5"] = self.R2_md5
         return rg_dict
 
+    def test_files_exist(self):
+        if not Path(self.R1).exists():
+            raise FileNotFoundError(self.R1)
+        if self.R2 is not None:
+            if not Path(self.R2).exists():
+                raise FileNotFoundError(self.R2)
+
+    def test_file_checksums(self):
+        if self.R1_md5 is not None:
+            read1_md5 = file_md5sum(Path(self.R1))
+            if not read1_md5 == self.R1_md5:
+                raise ValueError(
+                    f"md5sum '{self.R1_md5}' not equal to '{read1_md5}' for "
+                    f"file {self.R1}.")
+        if self.R2 is not None and self.R2_md5 is not None:
+            read2_md5 = file_md5sum(Path(self.R2))
+            if not read2_md5 == self.R2_md5:
+                raise ValueError(
+                    f"md5sum '{self.R2_md5}' not equal to '{read2_md5}' for "
+                    f"file {self.R2}.")
+
 
 @dataclass()
 class Library:
@@ -93,6 +117,14 @@ class Library:
         else:
             raise TypeError("Only readgroup objects can be appended to the "
                             "library.")
+
+    def test_files_exist(self):
+        for readgroup in self:
+            readgroup.test_files_exist()
+
+    def test_file_checksums(self):
+        for readgroup in self:
+            readgroup.test_file_checksums()
 
 
 @dataclass()
@@ -123,6 +155,14 @@ class Sample:
             raise TypeError("Only library objects can be appended to the "
                             "sample.")
 
+    def test_files_exist(self):
+        for library in self:
+            library.test_files_exist()
+
+    def test_file_checksums(self):
+        for library in self:
+            library.test_file_checksums()
+
 
 @dataclass()
 class SampleGroup:
@@ -145,6 +185,14 @@ class SampleGroup:
         else:
             raise TypeError("Only sample objects can be appended to the "
                             "samplegroup.")
+
+    def test_files_exist(self):
+        for sample in self:
+            sample.test_files_exist()
+
+    def test_file_checksums(self):
+        for sample in self:
+            sample.test_file_checksums()
 
     @classmethod
     def from_dict_of_dicts(cls, dict_of_dicts: Dict[str, Any]):

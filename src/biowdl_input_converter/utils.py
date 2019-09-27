@@ -23,6 +23,7 @@ Contains general functions that are not specific to biowdl_input_converter.
 """
 
 import csv
+import hashlib
 from pathlib import Path
 from typing import Dict, Generator
 
@@ -53,3 +54,21 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
             row_dict = {heading: row[index]
                         for index, heading in enumerate(header)}
             yield row_dict
+
+
+# Copied from pytest-workflow
+def file_md5sum(filepath: Path) -> str:
+    """
+    Generates a md5sum for a file. Reads file in blocks to save memory.
+    :param filepath: a pathlib. Path to the file
+    :return: a md5sum as hexadecimal string.
+    """
+
+    hasher = hashlib.md5()  # nosec: only used for file integrity
+    with filepath.open('rb') as file_handler:  # Read the file in bytes
+        # Hardcode the blocksize at 8192 bytes here.
+        # This can be changed or made variable when the requirements compel us
+        # to do so.
+        for block in iter(lambda: file_handler.read(8192), b''):
+            hasher.update(block)
+    return hasher.hexdigest()
