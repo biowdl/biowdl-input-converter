@@ -27,7 +27,7 @@ from biowdl_input_converter.output_conversions import \
 
 import pytest
 
-FILESDIR = Path(__file__).parent / Path("files")
+from . import FILESDIR
 
 
 def test_main_comma_complete():

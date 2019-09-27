@@ -23,48 +23,11 @@ from pathlib import Path
 from biowdl_input_converter.input_conversions import biowdl_yaml_to_samplegroup
 from biowdl_input_converter.output_conversions import \
     samplegroup_to_biowdl_old_yaml
-from biowdl_input_converter.samplestructure import Library, ReadGroup, \
-    Sample, SampleGroup
 
 import yaml
 
-FILESDIR = Path(__file__).parent / Path("files")
-
-COMPLETE_WITH_CONTROL_SAMPLEGROUP = SampleGroup([
-    Sample(id="s1", libraries=[
-        Library(id="lib1", readgroups=[
-            ReadGroup(
-                id="rg1",
-                R1="r1.fq",
-                R1_md5="hello",
-                R2="r2.fq",
-                R2_md5="hey"
-            )])]),
-    Sample(id="s2", additional_properties=dict(control="s1"), libraries=[
-        Library(id="lib1", readgroups=[
-            ReadGroup(
-                id="rg1",
-                R1="r1.fq",
-                R1_md5="aa",
-                R2="r2.fq",
-                R2_md5="bb"
-            )])])])
-
-WITHOUT_MD5_SAMPLEGROUP = SampleGroup([
-    Sample(id="s1", libraries=[
-        Library(id="lib1", readgroups=[
-            ReadGroup(
-                id="rg1",
-                R1="r1.fq",
-                R2="r2.fq",
-            )])]),
-    Sample(id="s2", libraries=[
-        Library(id="lib1", readgroups=[
-            ReadGroup(
-                id="rg1",
-                R1="r1.fq",
-                R2="r2.fq",
-            )])])])
+from . import COMPLETE_WITH_CONTROL_SAMPLEGROUP, FILESDIR, \
+    WITHOUT_MD5_SAMPLEGROUP
 
 
 def test_import_biowdl_old_yaml_all_fields():
