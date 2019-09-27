@@ -18,6 +18,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+All conversions from samplestructure.SampleGroup to a variety of formats.
+"""
 import json
 
 import yaml
@@ -26,6 +29,12 @@ from .samplestructure import SampleGroup
 
 
 def samplegroup_to_biowdl_old_structure(samplegroup: SampleGroup):
+    """
+    Converts a SampleGroup object to biowdl old structure as used in
+    Germline-DNA and RNA-seq pipelines version 1.
+    :param samplegroup: A samplegroup object
+    :return: a structure in dictionaries that can be converted to a WDL struct.
+    """
     samples = []
     for sample in samplegroup:
         libraries = []
@@ -63,14 +72,34 @@ def samplegroup_to_biowdl_old_structure(samplegroup: SampleGroup):
 
 
 def samplegroup_to_biowdl_old_yaml(samplegroup: SampleGroup):
+    """
+    Converts a SampleGroup object to biowdl old structure as used in
+    Germline-DNA and RNA-seq pipelines version 1.
+    :param samplegroup: A samplegroup object
+    :return: a structure in dictionaries that can be converted to a WDL struct
+    in YAML format.
+    """
     return yaml.safe_dump(samplegroup_to_biowdl_old_structure(samplegroup))
 
 
 def samplegroup_to_biowdl_old_json(samplegroup: SampleGroup):
+    """
+    Converts a SampleGroup object to biowdl old structure as used in
+    Germline-DNA and RNA-seq pipelines version 1.
+    :param samplegroup: A samplegroup object
+    :return: a structure in dictionaries that can be converted to a WDL struct
+    in JSON format.
+    """
     return json.dumps(samplegroup_to_biowdl_old_structure(samplegroup))
 
 
 def samplegroup_to_biowdl_new_structure(samplegroup: SampleGroup):
+    """
+    Converts a SampleGroup object to biowdl new structure as used in
+    the small-rna pipeline version 1.
+    :param samplegroup: A samplegroup object
+    :return: a structure in dictionaries that can be converted to a WDL struct.
+    """
     samples = []
     for sample in samplegroup:
         sample_dict = {"readgroups": [], "id": sample.id}
@@ -85,4 +114,11 @@ def samplegroup_to_biowdl_new_structure(samplegroup: SampleGroup):
 
 
 def samplegroup_to_biowdl_new_json(samplegroup: SampleGroup) -> str:
+    """
+    Converts a SampleGroup object to biowdl new structure as used in
+    the small-rna pipeline version 1.
+    :param samplegroup: A samplegroup object
+    :return: a structure in dictionaries that can be converted to a WDL struct
+    in JSON format.
+    """
     return json.dumps(samplegroup_to_biowdl_new_structure(samplegroup))
