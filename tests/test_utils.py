@@ -36,5 +36,5 @@ def test_only_header():
 def test_empty_csv():
     empty_csv = FILESDIR / Path("empty.csv")
     with pytest.raises(ValueError) as error:
-        csv_to_dict_generator(empty_csv)
+        list(csv_to_dict_generator(empty_csv))
     assert error.match("Could not parse CSV file")
