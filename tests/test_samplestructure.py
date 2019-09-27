@@ -18,10 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
-
 from biowdl_input_converter.samplestructure import Library, ReadGroup, \
     Sample, SampleGroup
+
+import pytest
 
 
 def test_readgroup_as_dict():
