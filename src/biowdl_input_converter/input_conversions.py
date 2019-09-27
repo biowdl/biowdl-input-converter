@@ -27,7 +27,6 @@ from typing import Any, Dict
 
 import yaml
 
-from .properties import PipelineProperties
 from .samplestructure import Library, ReadGroup, Sample, SampleGroup
 from .utils import csv_to_dict_generator
 
@@ -66,20 +65,16 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
     return samplegroup
 
 
-def samplesheet_csv_to_samplegroup(
-        samplesheet_file: Path,
-        properties: PipelineProperties = PipelineProperties()) -> SampleGroup:
+def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
     """
     Converts a samplesheet file to a SampleGroup class
     :param samplesheet_file: a pathlib.Path to a file.
-    :param properties: a PipelineProperties object that describes which
-    properties should also be extracted from the csv file
     :return: a SampleGroup object
     """
     samples = {}  # type: Dict[str, Any]
     for row_dict in csv_to_dict_generator(samplesheet_file):
         sample = row_dict.pop("sample")
-        # In legacy cases readgroups were labbeled libraries,
+        # In legacy cases readgroups were labelled libraries,
         # proper libraries didn't exist, for the new format the are
         # the same as samples.
         if "readgroup" in row_dict.keys():
@@ -105,25 +100,7 @@ def samplesheet_csv_to_samplegroup(
             "R2": read2 if read2 != "" else None,
             "R2_md5": read2_md5 if read2_md5 != "" else None
         }
-        # Add all remaining properties
-        add_prop = "additional_properties"
-        samples[sample][add_prop] = {}
-        samples[sample][lib][add_prop] = {}
-        samples[sample][lib][readgroup][add_prop] = {}
-        for key, value in row_dict.items():
-            if key in properties.sample.keys():
-                if properties.sample[key] is True and value == "":
-                    raise ValueError(f"Required property '{key}' missing from "
-                                     f"{rg_id}.")
-                samples[sample][add_prop][key] = value
-            if key in properties.library.keys():
-                if properties.library[key] is True and value == "":
-                    raise ValueError(f"Required property '{key}' missing from "
-                                     f"{rg_id}.")
-                samples[sample][lib][add_prop][key] = value
-            if key in properties.readgroup.keys():
-                if properties.readgroup[key] is True and value == "":
-                    raise ValueError(f"Required property '{key}' missing from "
-                                     f"{rg_id}.")
-                samples[sample][lib][readgroup][add_prop][key] = value
+        # Add all remaining properties to additional properties at the
+        # sample level
+        samples[sample]["additional_properties"] = row_dict
     return SampleGroup.from_dict_of_dicts(samples)
