@@ -36,8 +36,11 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
     :return: a generator that yields rows as Dict[str,str].
     """
     with csv_file.open("r") as csvfile:
-        dialect = csv.Sniffer().sniff("".join(
-            [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
+        first_ten_lines = "".join([csvfile.readline() for _ in range(10)])
+        try:
+            dialect = csv.Sniffer().sniff(first_ten_lines, delimiters=";,\t")
+        except csv.Error as csv_error:
+            raise ValueError(f"Could not parse CSV file: {csv_error}")
         csvfile.seek(0)
         reader = csv.reader(csvfile, dialect)
         try:
