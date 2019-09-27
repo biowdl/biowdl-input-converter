@@ -17,13 +17,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import csv
+
 from pathlib import Path
-from typing import Any, Dict, Generator
+from typing import Any, Dict
 
 import yaml
 
 from .samplestructure import Library, ReadGroup, Sample, SampleGroup
+from .utils import csv_to_dict_generator
 
 
 def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
@@ -58,19 +59,6 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
         sample.additional_properties.update(sample_dict)
         samplegroup.append_sample(sample)
     return samplegroup
-
-
-def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, None]:  # noqa: E501
-    with csv_file.open("r") as csvfile:
-        dialect = csv.Sniffer().sniff("".join(
-            [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        header = next(reader)
-        for row in reader:
-            row_dict = {heading: row[index]
-                        for index, heading in enumerate(header)}
-            yield row_dict
 
 
 def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
