@@ -18,6 +18,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+This module contains the PipelineProperties object.
+This module can be used later to contain the code that determines which
+properties are present in required in the pipelines. Be it in python code,
+or by reading in YAML configs that are included in the package (or not).
+"""
+
 from dataclasses import dataclass, field
 from typing import Dict
 
