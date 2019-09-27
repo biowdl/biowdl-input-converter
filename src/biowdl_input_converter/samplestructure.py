@@ -36,6 +36,10 @@ from typing import Any, Dict, List, Optional
 
 @dataclass()
 class ReadGroup():
+    """
+    Contains the paths and md5sums to a forward read (R1) and reverse read
+    (R2) for a lane in the sequencer.
+    """
     id: str
     R1: str
     R2: Optional[str] = None
@@ -44,6 +48,13 @@ class ReadGroup():
     additional_properties: Dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self):
+        """
+        Returns a dict with all of this readgroups properties. If R2, R1_md5
+        and/or R2_md5 are None they are excluded from the dict. This is to
+        prevent 'R2: null' fields in the JSON or YAML outputs.
+        Additional properties are also added to the dict.
+        :return:
+        """
         rg_dict = {"id": self.id, "R1": self.R1}
         rg_dict.update(self.additional_properties)
         if self.R1_md5 is not None:
@@ -57,6 +68,11 @@ class ReadGroup():
 
 @dataclass()
 class Library():
+    """
+    Contains all the sequenced readgroups for this sample library. A sample
+    library is a preparation of the sample's DNA to be sequenced. This can
+    happen on multiple lanes in the sequencer (readgroups).
+    """
     id: str
     readgroups: List[ReadGroup] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
@@ -68,11 +84,24 @@ class Library():
         return self.readgroups[item]
 
     def append_readgroup(self, readgroup: ReadGroup):
-        self.readgroups.append(readgroup)
+        """
+        Append a readgroup to this library.
+        :param readgroup: a Readgroup object.
+        """
+        if isinstance(readgroup, ReadGroup):
+            self.readgroups.append(readgroup)
+        else:
+            raise TypeError("Only readgroup objects can be appended to the "
+                            "library.")
 
 
 @dataclass()
 class Sample():
+    """
+    The biological sample and its libraries. While in theory you can have
+    multiple preparations of the sample for sequencing (libraries) in practice
+    there is usually only one.
+    """
     id: str
     libraries: List[Library] = field(default_factory=list)
     additional_properties: Dict[str, Any] = field(default_factory=dict)
@@ -84,11 +113,20 @@ class Sample():
         return self.libraries[item]
 
     def append_library(self, library: Library):
-        self.libraries.append(library)
+        """
+        Append a library to this sample
+        :param library: a library object
+        """
+        if isinstance(library, Library):
+            self.libraries.append(library)
+        else:
+            raise TypeError("Only library objects can be appended to the "
+                            "sample.")
 
 
 @dataclass()
 class SampleGroup:
+    """A group of samples that are analysed together"""
     samples: List[Sample] = field(default_factory=list)
 
     def __iter__(self):
@@ -98,10 +136,22 @@ class SampleGroup:
         return self.samples[item]
 
     def append_sample(self, sample: Sample):
-        self.samples.append(sample)
+        """
+        Append a sample object to the sample group.
+        :param sample: a Sample object.
+        """
+        if isinstance(sample, Sample):
+            self.samples.append(sample)
+        else:
+            raise TypeError("Only sample objects can be appended to the "
+                            "samplegroup.")
 
     @classmethod
     def from_dict_of_dicts(cls, dict_of_dicts: Dict[str, Any]):
+        """
+        Converts a dictionary of dictionaries to a SampleGroup object.
+        :param dict_of_dicts: the dict of dicts.
+        """
         samplegroup = SampleGroup()
         # Additional properties are popped, so they are no longer part of
         # items in the dictionaries.
