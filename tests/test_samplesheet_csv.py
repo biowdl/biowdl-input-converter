@@ -39,3 +39,12 @@ def test_main_missing_field():
         input_conversions.samplesheet_csv_to_samplegroup(
             Path(filesdir) / Path("missing_field.csv"))
     e.match("sample")
+
+
+def test_extra_field():
+    samplesheet = input_conversions.samplesheet_csv_to_samplegroup(
+        Path(filesdir) / Path("extra_fields.csv"))
+    assert samplesheet[0].additional_properties["extra_field1"] == "xf1"
+    assert samplesheet[0].additional_properties["extra_field2"] == "xf2"
+    assert samplesheet[1].additional_properties["extra_field1"] == "xfI"
+    assert samplesheet[1].additional_properties["extra_field2"] == "xfII"
