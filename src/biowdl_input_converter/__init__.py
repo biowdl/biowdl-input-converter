@@ -26,12 +26,23 @@ from . import input_conversions, output_conversions
 
 
 def argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("samplesheet", type=str)
-    parser.add_argument("-o", "--output", default=sys.stdout)
+    parser = argparse.ArgumentParser(
+        description="Parse samplesheets for BioWDL pipelines.")
+    parser.add_argument("samplesheet", type=str, required=True,
+                        help="The input samplesheet. Format will be "
+                             "automatically detected.")
+    parser.add_argument("-o", "--output",
+                        help="The output file to which the json is written. "
+                             "Default: stdout")
     parser.add_argument("--old", action="store_false", dest="new_style_json",
                         help="Output old style JSON as used in BioWDL "
                              "germline-DNA and RNA-seq version 1 pipelines")
+    parser.add_argument("--skip-file-check", action="store_true",
+                        help="Skip the checking if files in the samplesheet "
+                             "are present.")
+    parser.add_argument("--check-file-md5sums", action="store_true",
+                        help="Do a md5sum check for reads which have md5sums "
+                             "added in the samplesheet.")
     return parser
 
 
