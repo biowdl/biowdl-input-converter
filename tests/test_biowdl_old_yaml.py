@@ -18,11 +18,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
 from pathlib import Path
 
 from biowdl_input_converter.input_conversions import biowdl_yaml_to_samplegroup
 from biowdl_input_converter.output_conversions import \
-    samplegroup_to_biowdl_old_yaml
+    samplegroup_to_biowdl_old_json, samplegroup_to_biowdl_old_yaml
 
 import yaml
 
@@ -60,3 +61,27 @@ def test_export_biowdl_no_props_no_md5():
     # Load the yamls to assure they are functionally equivalent regardless of
     # order
     assert yaml.safe_load(yaml_exported) == yaml.safe_load(yaml_contents)
+
+
+def test_old_style_conversion_yaml_to_json():
+    samplegroup = biowdl_yaml_to_samplegroup(
+        FILESDIR / Path("complete_with_control.yml"))
+    json_result = """
+    {"samples": [
+        {"id": "s1", "libraries": [{"id": "lib1", "readgroups": [
+            {"id": "rg1", "reads":
+                {"R1": "r1.fq",
+                "R1_md5": "hello",
+                "R2": "r2.fq",
+                "R2_md5": "hey"}}]}]},
+        {"id": "s2", "control":"s1", "libraries": [{"id": "lib1",
+            "readgroups": [
+            {"id": "rg1", "reads":
+            {"R1": "r1.fq",
+             "R1_md5": "aa",
+            "R2": "r2.fq",
+              "R2_md5": "bb"}}]}]}]
+    }
+    """
+    assert json.loads(
+        samplegroup_to_biowdl_old_json(samplegroup)) == json.loads(json_result)
