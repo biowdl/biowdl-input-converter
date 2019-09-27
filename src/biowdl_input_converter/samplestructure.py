@@ -35,7 +35,7 @@ from typing import Any, Dict, List, Optional
 
 
 @dataclass()
-class ReadGroup():
+class ReadGroup:
     """
     Contains the paths and md5sums to a forward read (R1) and reverse read
     (R2) for a lane in the sequencer.
@@ -67,7 +67,7 @@ class ReadGroup():
 
 
 @dataclass()
-class Library():
+class Library:
     """
     Contains all the sequenced readgroups for this sample library. A sample
     library is a preparation of the sample's DNA to be sequenced. This can
@@ -96,7 +96,7 @@ class Library():
 
 
 @dataclass()
-class Sample():
+class Sample:
     """
     The biological sample and its libraries. While in theory you can have
     multiple preparations of the sample for sequencing (libraries) in practice
