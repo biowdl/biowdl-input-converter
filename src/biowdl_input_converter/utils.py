@@ -45,6 +45,7 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
         # A proper generator never raises a stop iteration. Instead it returns.
         except StopIteration:
             return
+
         for row in reader:
             row_dict = {heading: row[index]
                         for index, heading in enumerate(header)}
