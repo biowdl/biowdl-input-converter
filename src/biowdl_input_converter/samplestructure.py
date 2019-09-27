@@ -78,6 +78,7 @@ class Sample(Node):
     def append_library(self, library: Library):
         self.libraries.append(library)
 
+
 @dataclass()
 class SampleGroup:
     samples: List[Sample] = field(default_factory=list)
@@ -99,8 +100,8 @@ class SampleGroup:
         for sample_id, sample_dict in dict_of_dicts.items():
             sample = Sample(
                 sample_id,
-            additional_properties = sample_dict.pop(
-                "additional_properties", {}))
+                additional_properties=sample_dict.pop(
+                    "additional_properties", {}))
             for lib_id, lib_dict in sample_dict.items():
                 library = Library(
                     lib_id,
