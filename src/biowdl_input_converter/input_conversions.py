@@ -18,6 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+All conversions to samplestructure.SampleGroup from a variety of formats.
+"""
+
 from pathlib import Path
 from typing import Any, Dict
 
@@ -65,6 +69,13 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
 def samplesheet_csv_to_samplegroup(
         samplesheet_file: Path,
         properties: PipelineProperties = PipelineProperties()) -> SampleGroup:
+    """
+    Converts a samplesheet file to a SampleGroup class
+    :param samplesheet_file: a pathlib.Path to a file.
+    :param properties: a PipelineProperties object that describes which
+    properties should also be extracted from the csv file
+    :return: a SampleGroup object
+    """
     samples = {}  # type: Dict[str, Any]
     for row_dict in csv_to_dict_generator(samplesheet_file):
         sample = row_dict.pop("sample")
@@ -73,22 +84,22 @@ def samplesheet_csv_to_samplegroup(
         # the same as samples.
         if "readgroup" in row_dict.keys():
             lib = row_dict.pop("library")
-            rg = row_dict.pop("readgroup")
+            readgroup = row_dict.pop("readgroup")
         else:
             lib = sample
-            rg = row_dict.pop("library")
+            readgroup = row_dict.pop("library")
 
-        rg_id = f"{sample}-{lib}-{rg}"
+        rg_id = f"{sample}-{lib}-{readgroup}"
         if sample not in samples.keys():
             samples[sample] = {}
         if lib not in samples[sample].keys():
             samples[sample][lib] = {}
-        if rg in samples[sample][lib].keys():
+        if readgroup in samples[sample][lib].keys():
             raise ValueError(f"Duplicate readgroup id {rg_id}")
         read1_md5 = row_dict.pop("R1_md5")
         read2_md5 = row_dict.pop("R2_md5")
         read2 = row_dict.pop("R2", None)
-        samples[sample][lib][rg] = {
+        samples[sample][lib][readgroup] = {
             "R1": row_dict.pop("R1"),
             "R1_md5": read1_md5 if read1_md5 != "" else None,
             "R2": read2 if read2 != "" else None,
@@ -98,25 +109,21 @@ def samplesheet_csv_to_samplegroup(
         add_prop = "additional_properties"
         samples[sample][add_prop] = {}
         samples[sample][lib][add_prop] = {}
-        samples[sample][lib][rg][add_prop] = {}
+        samples[sample][lib][readgroup][add_prop] = {}
         for key, value in row_dict.items():
             if key in properties.sample.keys():
                 if properties.sample[key] is True and value == "":
                     raise ValueError(f"Required property '{key}' missing from "
                                      f"{rg_id}.")
-                else:
-                    samples[sample][add_prop][key] = value
+                samples[sample][add_prop][key] = value
             if key in properties.library.keys():
                 if properties.library[key] is True and value == "":
                     raise ValueError(f"Required property '{key}' missing from "
                                      f"{rg_id}.")
-                else:
-                    samples[sample][lib][add_prop][key] = value
-
+                samples[sample][lib][add_prop][key] = value
             if key in properties.readgroup.keys():
                 if properties.readgroup[key] is True and value == "":
                     raise ValueError(f"Required property '{key}' missing from "
                                      f"{rg_id}.")
-                else:
-                    samples[sample][lib][rg][add_prop][key] = value
+                samples[sample][lib][readgroup][add_prop][key] = value
     return SampleGroup.from_dict_of_dicts(samples)
