@@ -23,6 +23,7 @@ from typing import Any, Dict
 
 import yaml
 
+from .properties import PipelineProperties
 from .samplestructure import Library, ReadGroup, Sample, SampleGroup
 from .utils import csv_to_dict_generator
 
@@ -61,7 +62,9 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
     return samplegroup
 
 
-def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
+def samplesheet_csv_to_samplegroup(
+        samplesheet_file: Path,
+        properties: PipelineProperties = PipelineProperties()) -> SampleGroup:
     samples = {}  # type: Dict[str, Any]
     for row_dict in csv_to_dict_generator(samplesheet_file):
         sample = row_dict.pop("sample")
@@ -74,24 +77,46 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
         else:
             lib = sample
             rg = row_dict.pop("library")
+
+        rg_id = f"{sample}-{lib}-{rg}"
         if sample not in samples.keys():
             samples[sample] = {}
-
         if lib not in samples[sample].keys():
             samples[sample][lib] = {}
         if rg in samples[sample][lib].keys():
-            raise ValueError("Duplicate readgroup id {}-{}-{}".format(
-                sample, lib, rg))
+            raise ValueError(f"Duplicate readgroup id {rg_id}")
         read1_md5 = row_dict.pop("R1_md5")
         read2_md5 = row_dict.pop("R2_md5")
+        read2 = row_dict.pop("R2", None)
         samples[sample][lib][rg] = {
             "R1": row_dict.pop("R1"),
             "R1_md5": read1_md5 if read1_md5 != "" else None,
-            "R2": row_dict.pop("R2"),
+            "R2": read2 if read2 != "" else None,
             "R2_md5": read2_md5 if read2_md5 != "" else None
         }
         # Add all remaining properties
+        add_prop = "additional_properties"
+        samples[sample][add_prop] = {}
+        samples[sample][lib][add_prop] = {}
+        samples[sample][lib][rg][add_prop] = {}
         for key, value in row_dict.items():
-            samples[sample][lib][rg][key] = value if value != "" else None
+            if key in properties.sample.keys():
+                if properties.sample[key] is True and value == "":
+                    raise ValueError(f"Required property '{key}' missing from "
+                                     f"{rg_id}.")
+                else:
+                    samples[sample][add_prop][key] = value
+            if key in properties.library.keys():
+                if properties.library[key] is True and value == "":
+                    raise ValueError(f"Required property '{key}' missing from "
+                                     f"{rg_id}.")
+                else:
+                    samples[sample][lib][add_prop][key] = value
 
+            if key in properties.readgroup.keys():
+                if properties.readgroup[key] is True and value == "":
+                    raise ValueError(f"Required property '{key}' missing from "
+                                     f"{rg_id}.")
+                else:
+                    samples[sample][lib][rg][add_prop][key] = value
     return SampleGroup.from_dict_of_dicts(samples)

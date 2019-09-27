@@ -19,16 +19,15 @@
 # SOFTWARE.
 
 from dataclasses import dataclass, field
-from typing import List, NamedTuple
-
-
-class Property(NamedTuple):
-    name: str
-    required: bool
+from typing import Dict
 
 
 @dataclass()
 class PipelineProperties:
-    sample: List[Property] = field(default_factory=list)
-    library: List[Property] = field(default_factory=list)
-    readgroup: List[Property] = field(default_factory=list)
+    """
+    sample, library and readgroup are of Dict[str, bool]. The str ID notes
+    the name of the property and the bool whether it is required.
+    """
+    sample: Dict[str, bool] = field(default_factory=list)
+    library: Dict[str, bool] = field(default_factory=list)
+    readgroup: Dict[str, bool] = field(default_factory=list)
