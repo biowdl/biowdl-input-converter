@@ -38,35 +38,26 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
     # We iterate through all levels of the dictionary here. pop() is used
     # here because it removes properties we know exist. Additional
     # properties remain. These are added as is.
-    samples = []
-    for sample in samplesheet_dict["samples"]:  # type: Dict[str, Any]
-        libraries = []
-        for library in sample.pop("libraries"):  # type: Dict[str, Any]
-            readgroups = []
-            for readgroup in library.pop(
-                    "readgroups"):  # type: Dict[str, Any]  # noqa: E501
-                read_struct = readgroup.pop(
-                    "reads")  # type: Dict[str, str]  # noqa: E501
-                readgroups.append(ReadGroup(
-                    id=readgroup.pop("id"),
-                    R1=Path(read_struct.pop("R1")),
-                    R1_md5=read_struct.pop("R1_md5", None),
-                    R2=Path(read_struct.pop("R2")),
-                    R2_md5=read_struct.pop("R2_md5"),
-                    additional_properties=readgroup
+    samplegroup = SampleGroup()
+    for sample_dict in samplesheet_dict["samples"]:  # type: Dict[str, Any]
+        sample = Sample(id=sample_dict.pop("id"))
+        for lib_dict in sample_dict.pop("libraries"):  # type: Dict[str, Any]
+            library = Library(id=lib_dict.pop("id"))
+            for rg_dict in lib_dict.pop("readgroups"):  # type: Dict[str, Any]  # noqa: E501
+                read_struct = rg_dict.pop("reads")  # type: Dict[str, str]  # noqa: E501
+                library.append_readgroup(ReadGroup(
+                    id=rg_dict.pop("id"),
+                    R1=read_struct["R1"],
+                    R1_md5=read_struct.get("R1_md5", None),
+                    R2=read_struct.get("R2", None),
+                    R2_md5=read_struct.get("R2_md5", None),
+                    additional_properties=rg_dict
                 ))
-            libraries.append(Library(
-                id=library.pop("id"),
-                readgroups=readgroups,
-                additional_properties=library
-            ))
-        samples.append(Sample(
-            id=sample.pop("id"),
-            libraries=libraries,
-            additional_properties=sample
-        ))
-
-    return SampleGroup(samples)
+            library.additional_properties.update(lib_dict)
+            sample.append_library(library)
+        sample.additional_properties.update(sample_dict)
+        samplegroup.append_sample(sample)
+    return samplegroup
 
 
 def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, None]:  # noqa: E501
