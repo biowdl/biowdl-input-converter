@@ -18,12 +18,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
+
 import yaml
 
 from .samplestructure import SampleGroup
 
 
-def samplegroup_to_biowdl_yaml(samplegroup: SampleGroup):
+def samplegroup_to_biowdl_old_structure(samplegroup: SampleGroup):
     samples = []
     for sample in samplegroup:
         libraries = []
@@ -57,4 +59,23 @@ def samplegroup_to_biowdl_yaml(samplegroup: SampleGroup):
         }
         sample_dict.update(sample.additional_properties)
         samples.append(sample_dict)
-    return yaml.safe_dump({"samples": samples})
+    return {"samples": samples}
+
+
+def samplegroup_to_biowdl_old_yaml(samplegroup: SampleGroup):
+    return yaml.safe_dump(samplegroup_to_biowdl_old_structure(samplegroup))
+
+
+def samplegroup_to_biowdl_old_json(samplegroup: SampleGroup):
+    return json.dumps(samplegroup_to_biowdl_old_structure(samplegroup))
+
+
+def samplegroup_to_biowdl_new_structure(samplegroup: SampleGroup):
+    samples = []
+    for sample in samplegroup:
+        sample_dict = {"readgroups": [], "id": sample.id}
+        for library in sample:
+            for readgroup in library:
+                rg_dict = {"id": readgroup.id,
+                           "lib_id": library.id,
+                           "R1": readgroup.R1}
