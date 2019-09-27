@@ -18,18 +18,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+Contains general functions that are not specific to biowdl_input_converter.
+"""
+
 import csv
 from pathlib import Path
 from typing import Dict, Generator
 
 
 def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, None]:  # noqa: E501
+    """
+    Converts a csv_file into a generator. The generator yields each row
+    (except the header) as a dictionary. {header_column1: value,
+    header_column2: value etc.}
+    :param csv_file: A pathlib.Path pointing to the csv file.
+    :return: a generator that yields rows as Dict[str,str].
+    """
     with csv_file.open("r") as csvfile:
         dialect = csv.Sniffer().sniff("".join(
             [csvfile.readline() for _ in range(10)]), delimiters=";,\t")
         csvfile.seek(0)
         reader = csv.reader(csvfile, dialect)
-        header = next(reader)
+        try:
+            header = next(reader)
+        # A proper generator never raises a stop iteration. Instead it returns.
+        except StopIteration:
+            return
         for row in reader:
             row_dict = {heading: row[index]
                         for index, heading in enumerate(header)}
