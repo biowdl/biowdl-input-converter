@@ -48,9 +48,9 @@ A samplesheet provides information about fastq files.
   sample for sequencing)
 - Readgroup name (which lane on the sequencer was used)
 - Location of the fastq file containing forward reads (R1) on the filesystem
-- Forward read (R1) md5sum
-- Location of the reverse read (R2) on the filesystem
-- Reverse read (R2) md5sum
+- Forward reads fastq (R1) md5sum
+- Location of the fastq file containing reverse reads (R2) on the filesystem
+- Reverse reads fastq (R2) md5sum
 - additional properties (if necessary)
 
 CSV/TSV Format
