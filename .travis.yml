@@ -8,6 +8,7 @@ script:
 matrix:
   include:
     - env: TOX_ENV=lint
+    - env: TOX_ENV=docs
     - env: TOX_ENV=py37
       install:
         - pip install codecov
