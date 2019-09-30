@@ -52,7 +52,7 @@ CSV/TSV Format
 A samplesheet can be a comma- or tab-delimited file. An example looks like
 this
 
-.. code-block::
+.. code-block:: text
 
     "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
     "s1","lib1","rg1","r1_1.fq","181a657e3f9c3cde2d3bb14ee7e894a3","r1_2.fq","ebe473b62926dcf6b38548851715820e"
@@ -60,7 +60,7 @@ this
 
 The md5sums are optional and can be left out:
 
-.. code-block::
+.. code-block:: text
 
     "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
     "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",
@@ -68,7 +68,7 @@ The md5sums are optional and can be left out:
 
 Additional properties at the sample level can be set additional columns:
 
-.. code-block::
+.. code-block:: text
 
     "sample","library","readgroup","R1","R1_md5","R2","R2_md5","HiSeq4000","other_property"
     "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",,"yes","pizza"
