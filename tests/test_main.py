@@ -66,6 +66,15 @@ def test_samplesheet_to_old_style_json():
     assert output == correct_output
 
 
+def test_yaml_samplesheet_to_json():
+    samplesheet = FILESDIR / Path("complete.yml")
+    output = samplesheet_to_json(samplesheet,
+                                 file_presence_check=False)
+    correct_output = output_conversions.samplegroup_to_biowdl_new_json(
+        input_conversions.biowdl_yaml_to_samplegroup(samplesheet))
+    assert output == correct_output
+
+
 def test_samplesheet_md5_checks(correct_md5sum_samplesheet):
     samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True,
                         file_md5_check=True)
@@ -81,3 +90,13 @@ def test_main(correct_md5sum_samplesheet, capsys):
         input_conversions.samplesheet_csv_to_samplegroup(
             correct_md5sum_samplesheet)) + '\n'
     assert stdout == correct_output
+
+
+def test_main_validate(correct_md5sum_samplesheet, capsys):
+    sys.argv = ["biowdl-input-converter",
+                "--check-file-md5sums",
+                "--validate",
+                str(correct_md5sum_samplesheet)]
+    biowdl_input_converter.main()
+    stdout = capsys.readouterr().out
+    assert stdout == ""
