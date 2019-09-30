@@ -54,25 +54,25 @@ this
 
 .. code-block::
 
-    "sample";"library";"readgroup";"R1";"R1_md5";"R2";"R2_md5"
-    "s1";"lib1";"rg1";"r1_1.fq";181a657e3f9c3cde2d3bb14ee7e894a3;"r1_2.fq";ebe473b62926dcf6b38548851715820e
-    "s2";"lib1";"rg1";"r2_1.fq";7e79b87d95573b06ff2c5e49508e9dbf;"r2_2.fq";dc2776dc3a07c4f468455bae1a8ff872
+    "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
+    "s1","lib1","rg1","r1_1.fq","181a657e3f9c3cde2d3bb14ee7e894a3","r1_2.fq","ebe473b62926dcf6b38548851715820e"
+    "s2","lib1","rg1","r2_1.fq","7e79b87d95573b06ff2c5e49508e9dbf","r2_2.fq","dc2776dc3a07c4f468455bae1a8ff872"
 
 The md5sums are optional and can be left out:
 
 .. code-block::
 
-    "sample";"library";"readgroup";"R1";"R1_md5";"R2";"R2_md5"
-    "s1";"lib1";"rg1";"r1_1.fq";;"r1_2.fq"
-    "s2";"lib1";"rg1";"r2_1.fq";;"r2_2.fq"
+    "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
+    "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",
+    "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",
 
 Additional properties at the sample level can be set additional columns:
 
 .. code-block::
 
-    "sample";"library";"readgroup";"R1";"R1_md5";"R2";"R2_md5";"HiSeq4000";"other_property"
-    "s1";"lib1";"rg1";"r1_1.fq";;"r1_2.fq";"yes";"pizza"
-    "s2";"lib1";"rg1";"r2_1.fq";;"r2_2.fq";"no";"broccoli"
+    "sample","library","readgroup","R1","R1_md5","R2","R2_md5","HiSeq4000","other_property"
+    "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",,"yes","pizza"
+    "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",,"no","broccoli"
 
 These files can be easily generated using a spreadsheet program (such as 
 Microsoft Excel or LibreOffice Calc). 
@@ -91,7 +91,8 @@ YAML format
 -----------
 Alternatively a YAML format can be used
 
-.. code-block::YAML
+.. code-block:: YAML
+
     samples:
         - id: s1
           libraries:
@@ -116,7 +117,8 @@ Alternatively a YAML format can be used
 
 Optional fields can be omitted and extra properties can be added:
 
-.. code-block::YAML
+.. code-block:: YAML
+
     samples:
         - id: s1
           HiSeq4000: no
