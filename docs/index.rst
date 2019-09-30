@@ -16,7 +16,7 @@ biowdl-input-converter
 Introduction
 ============
 
-biowdl-input-converter converts samplesheets that are readable by humans into
+biowdl-input-converter converts human-readable samplesheets into
 a format that can be easily processed by BioWDL pipelines.
 
 For more information on BioWDL check out the documentation on
@@ -47,7 +47,7 @@ A samplesheet provides information about fastq files.
 - Library name (for each sample usually one library is used to prepare the
   sample for sequencing)
 - Readgroup name (which lane on the sequencer was used)
-- Location of the forward read (R1) on the filesystem
+- Location of the fastq file containing forward reads (R1) on the filesystem
 - Forward read (R1) md5sum
 - Location of the reverse read (R2) on the filesystem
 - Reverse read (R2) md5sum
@@ -72,7 +72,7 @@ The md5sums are optional and can be left out:
     "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",
     "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",
 
-Additional properties at the sample level can be set additional columns:
+Additional properties at the sample level can be set using additional columns:
 
 .. code-block:: text
 

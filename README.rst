@@ -28,7 +28,7 @@
 BioWDL input converter
 ========================
 
-biowdl-input-converter converts samplesheets that are readable by humans into
+biowdl-input-converter converts human-readable samplesheets into
 a format that can be easily processed by BioWDL pipelines.
 
 Check out the documentation on https://biowdl-input-converter.readthedocs.io
