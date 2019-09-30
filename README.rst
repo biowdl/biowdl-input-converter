@@ -1,3 +1,29 @@
+.. Badges have empty alts. So nothing shows up if they do not work.
+
+.. image:: https://img.shields.io/pypi/v/biowdl-input-converter.svg
+  :target: https://pypi.org/project/biowdl-input-converter/
+  :alt:
+
+.. image:: https://img.shields.io/conda/v/bioconda/biowdl-input-converter.svg
+  :target: http://bioconda.github.io/recipes/biowdl-input-converter/README.html
+  :alt:
+
+.. image:: https://img.shields.io/pypi/pyversions/biowdl-input-converter.svg
+  :target: https://pypi.org/project/biowdl-input-converter/
+  :alt:
+
+.. image:: https://img.shields.io/pypi/l/biowdl-input-converter.svg
+  :target: https://github.com/biowdl/biowdl-input-converter/blob/master/LICENSE
+  :alt:
+
+.. image:: https://travis-ci.org/biowdl/biowdl-input-converter.svg?branch=master
+  :target: https://travis-ci.org/biowdl/biowdl-input-converter
+  :alt:
+
+.. image:: https://codecov.io/gh/biowdl/biowdl-input-converter/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/biowdl/biowdl-input-converter
+  :alt:
+
 ========================
 BioWDL input converter
 ========================
