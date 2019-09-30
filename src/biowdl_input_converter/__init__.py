@@ -33,7 +33,7 @@ from . import input_conversions, output_conversions
 def argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Parse samplesheets for BioWDL pipelines.")
-    parser.add_argument("samplesheet", type=str, required=True,
+    parser.add_argument("samplesheet", type=str,
                         help="The input samplesheet. Format will be "
                              "automatically detected.")
     parser.add_argument("-o", "--output",
@@ -42,7 +42,7 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--validate", action="store_true",
                         help="Do not generate output but only validate the "
                              "samplesheet.")
-    parser.add_argument("--old", action="store_false", dest="new_style_json",
+    parser.add_argument("--old", action="store_true", dest="old_style_json",
                         help="Output old style JSON as used in BioWDL "
                              "germline-DNA and RNA-seq version 1 pipelines")
     parser.add_argument("--skip-file-check", action="store_true",
@@ -96,7 +96,7 @@ def main():
     args = argument_parser().parse_args()
     output_json = samplesheet_to_json(
         samplesheet=Path(args.samplesheet),
-        old_style_json=args.old,
+        old_style_json=args.old_style_json,
         file_presence_check=not args.skip_file_check,
         file_md5_check=args.check_file_md5sums)
 
