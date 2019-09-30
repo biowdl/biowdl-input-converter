@@ -24,7 +24,6 @@ by cromwell.
 """
 
 import argparse
-import sys
 from pathlib import Path
 
 from . import input_conversions, output_conversions
@@ -106,7 +105,7 @@ def main():
             with open(args.output, "w") as output_h:
                 output_h.write(output_json + "\n")
         else:
-            sys.stdout.write(output_json + "\n")
+            print(output_json)
 
 
 if __name__ == "__main__":
