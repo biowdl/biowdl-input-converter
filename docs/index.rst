@@ -22,6 +22,12 @@ a format that can be easily processed by BioWDL pipelines.
 For more information on BioWDL check out the documentation on
 https://biowdl.github.io.
 
+============
+Installation
+============
+
++ Create a new virtualenv
++ run ``pip install biowdl-input-converter``
 
 ======
 Usage
