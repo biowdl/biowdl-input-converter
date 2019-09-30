@@ -16,11 +16,11 @@
   :target: https://github.com/biowdl/biowdl-input-converter/blob/master/LICENSE
   :alt:
 
-.. image:: https://travis-ci.org/biowdl/biowdl-input-converter.svg?branch=master
+.. image:: https://travis-ci.org/biowdl/biowdl-input-converter.svg?branch=develop
   :target: https://travis-ci.org/biowdl/biowdl-input-converter
   :alt:
 
-.. image:: https://codecov.io/gh/biowdl/biowdl-input-converter/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/biowdl/biowdl-input-converter/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/biowdl/biowdl-input-converter
   :alt:
 
