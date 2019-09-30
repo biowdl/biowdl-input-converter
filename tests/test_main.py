@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -67,3 +68,8 @@ def test_samplesheet_to_old_style_json():
 def test_samplesheet_md5_checks(correct_md5sum_samplesheet):
     samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True,
                         file_md5_check=True)
+
+
+def test_main(correct_md5sum_samplesheet, capsys):
+    sys.argv = ["biowdl-input-converter",
+                ]
