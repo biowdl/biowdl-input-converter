@@ -2,12 +2,11 @@
 BioWDL input converter
 ========================
 
-This tool was created to let biowdl handle a variety of inputs and
-convert these to WDL Structs that can be used in the pipeline.
+biowdl-input-converter converts samplesheets that are readable by humans into
+a format that can be easily processed by BioWDL pipelines.
 
-Thanks to this tool, the pipeline's input structure can be changed
-without changes to the user input. This allows greater flexibility
-for the BioWDL developers.
+Check out the documentation on https://biowdl-input-converter.readthedocs.io
+for more information on installation and usage.
 
-This also allows BioWDL to support multiple input formats to make
-it easier for the users.
+For more information on BioWDL check out the documentation on
+https://biowdl.github.io.
