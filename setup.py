@@ -34,7 +34,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/x-rst",
     license="MIT",
-    keywords="pytest workflow pipeline yaml yml",
+    keywords="biowdl pipeline input csv yaml json samplesheet convert",
     zip_safe=False,
     packages=find_packages('src'),
     package_dir={'': 'src'},
