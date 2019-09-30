@@ -39,6 +39,9 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("-o", "--output",
                         help="The output file to which the json is written. "
                              "Default: stdout")
+    parser.add_argument("--validate", action="store_true",
+                        help="Do not generate output but only validate the "
+                             "samplesheet.")
     parser.add_argument("--old", action="store_false", dest="new_style_json",
                         help="Output old style JSON as used in BioWDL "
                              "germline-DNA and RNA-seq version 1 pipelines")
@@ -97,11 +100,13 @@ def main():
         file_presence_check=not args.skip_file_check,
         file_md5_check=args.check_file_md5sums)
 
-    if args.output is not None:
-        with open(args.output, "w") as output_h:
-            output_h.write(output_json + "\n")
-    else:
-        sys.stdout.write(output_json + "\n")
+    # Only generate output if not validating.
+    if not args.validate:
+        if args.output is not None:
+            with open(args.output, "w") as output_h:
+                output_h.write(output_json + "\n")
+        else:
+            sys.stdout.write(output_json + "\n")
 
 
 if __name__ == "__main__":
