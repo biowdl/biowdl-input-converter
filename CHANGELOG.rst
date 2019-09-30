@@ -9,6 +9,7 @@ Changelog
 
 0.1.0-dev
 ---------------
++ Added documentation and readthedocs page
 + Added changelog and release procedures
 + Added test suite with coverage metrics, enabled CI
 + Add validate flag to allow users to validate files
