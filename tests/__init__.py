@@ -23,7 +23,7 @@ from pathlib import Path
 from biowdl_input_converter.samplestructure import Library, ReadGroup, \
     Sample, SampleGroup
 
-FILESDIR = Path(__file__).parent / Path("files")
+FILESDIR: Path = Path(__file__).parent / Path("files")
 
 COMPLETE_WITH_CONTROL_SAMPLEGROUP = SampleGroup([
     Sample(id="s1", libraries=[

@@ -18,14 +18,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import shutil
+import tempfile
 from pathlib import Path
 
 from biowdl_input_converter import input_conversions, main, \
     output_conversions, samplesheet_to_json
 
+import pytest
+
 from . import FILESDIR
 
 COMPLETE_CSV = csv_file = FILESDIR / Path("complete.csv")
+
+
+@pytest.fixture()
+def correct_md5sum_samplesheet():
+    r1 = FILESDIR / Path("data") / Path("R1.fq")
+    r2 = FILESDIR / Path("data") / Path("R2.fq")
+    tempdir = Path(tempfile.mkdtemp())
+    temp_csv = (tempdir / Path("correct_md5sum.csv")).absolute()
+    with temp_csv.open("w") as csv_h:
+        csv_h.writelines([
+            '"sample","library","readgroup","R1","R1_md5","R2","R2_md5"',
+            f'"s1","lib1","rg1",'
+            f'"{str(r1.absolute())}","d8e8fca2dc0f896fd7cb4cb0031ba249",'
+            f'"{str(r2.absolute())}",126a8a51b9d1bbd07fddc65819a542c3',
+            ])
+    yield temp_csv
+    shutil.rmtree(str(tempdir))
 
 
 def test_samplesheet_to_json_no_checks():
@@ -43,3 +64,6 @@ def test_samplesheet_to_old_style_json():
     assert output == correct_output
 
 
+def test_samplesheet_md5_checks(correct_md5sum_samplesheet):
+    samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True,
+                        file_md5_check=True)
