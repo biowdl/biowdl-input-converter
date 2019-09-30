@@ -57,18 +57,21 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
 
 
 # Copied from pytest-workflow
-def file_md5sum(filepath: Path) -> str:
+def file_md5sum(filepath: Path, blocksize: int = 64 * 1024) -> str:
     """
     Generates a md5sum for a file. Reads file in blocks to save memory.
     :param filepath: a pathlib. Path to the file
+    :param blocksize: An integer describing the blocksize when reading in the
+    file. Default: 64 kb. This is faster than 8kb (3.4 vs 3.74 seconds on a
+    2.3 GB file). After 64 kb the speed gains are very minimal for the increase
+    in used memory.
     :return: a md5sum as hexadecimal string.
     """
-
     hasher = hashlib.md5()  # nosec: only used for file integrity
     with filepath.open('rb') as file_handler:  # Read the file in bytes
         # Hardcode the blocksize at 8192 bytes here.
         # This can be changed or made variable when the requirements compel us
         # to do so.
-        for block in iter(lambda: file_handler.read(8192), b''):
+        for block in iter(lambda: file_handler.read(blocksize), b''):
             hasher.update(block)
     return hasher.hexdigest()
