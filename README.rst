@@ -1,4 +1,6 @@
-# BioWDL input converter
+========================
+BioWDL input converter
+========================
 
 This tool was created to let biowdl handle a variety of inputs and
 convert these to WDL Structs that can be used in the pipeline.

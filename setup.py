@@ -18,10 +18,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-with open("README.md", "r") as readme_file:
-    LONG_DESCRIPTION = readme_file.read()
+LONG_DESCRIPTION = Path("README.rst").read_text()
 
 setup(
     name="biowdl-input-converter",
@@ -31,7 +32,7 @@ setup(
     author="Leiden University Medical Center",
     author_email="sasc@lumc.nl",
     long_description=LONG_DESCRIPTION,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     license="MIT",
     keywords="pytest workflow pipeline yaml yml",
     zip_safe=False,
