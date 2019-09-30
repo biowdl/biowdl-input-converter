@@ -18,10 +18,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+biowdl-input-converter converts samplesheets to json files that are readable
+by cromwell.
+"""
+
 import argparse
 import sys
 from pathlib import Path
-from typing import Optional
 
 from . import input_conversions, output_conversions
 
@@ -47,23 +51,34 @@ def argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def samplesheet_to_json(samplesheet: str,
-                        output: Optional[str] = None,
+def samplesheet_to_json(samplesheet: Path,
                         old_style_json: bool = False,
                         file_presence_check: bool = True,
-                        file_md5_check: bool = False) -> None:
-    samplesheet_path = Path(samplesheet)
-
-    if samplesheet_path.suffix in [".tsv", ".csv"]:
+                        file_md5_check: bool = False) -> str:
+    """
+    Converts a samplesheet file to JSON
+    :param samplesheet:
+    :param old_style_json: Return a BioWDL old-style pipeline JSON
+    :param file_presence_check: Check if the files in the samplesheet are
+    present
+    :param file_md5_check: Check if the md5sums for the files are correct
+    :return: a JSON string presenting the BioWDL JSON.
+    """
+    if samplesheet.suffix in [".tsv", ".csv"]:
         samplegroup = input_conversions.samplesheet_csv_to_samplegroup(
-            samplesheet_path)
+            samplesheet)
     # JSON can also be parsed by a YAML parser.
-    elif samplesheet_path.suffix in [".yaml", ".yml", ".json"]:
+    elif samplesheet.suffix in [".yaml", ".yml", ".json"]:
         samplegroup = input_conversions.biowdl_yaml_to_samplegroup(
-            samplesheet_path)
+            samplesheet)
     else:
         raise NotImplementedError(
-            f"Unknown extension: {samplesheet_path.suffix}")
+            f"Unknown extension: {samplesheet.suffix}")
+
+    if file_presence_check:
+        samplegroup.test_files_exist()
+    if file_md5_check:
+        samplegroup.test_file_checksums()
 
     if old_style_json:
         output_json = output_conversions.samplegroup_to_biowdl_old_json(
@@ -71,15 +86,22 @@ def samplesheet_to_json(samplesheet: str,
     else:
         output_json = output_conversions.samplegroup_to_biowdl_new_json(
             samplegroup)
-
-    with open(output or sys.stdout, "w") as output_h:
-        output_h.write(output_json)
+    return output_json
 
 
 def main():
-    parser = argument_parser()
-    args = parser.parse_args()
-    samplesheet_to_json(args.samplesheet)
+    args = argument_parser().parse_args()
+    output_json = samplesheet_to_json(
+        samplesheet=Path(args.samplesheet),
+        old_style_json=args.old,
+        file_presence_check=not args.skip_file_check,
+        file_md5_check=args.check_file_md5sums)
+
+    if args.output is not None:
+        with open(args.output, "w") as output_h:
+            output_h.write(output_json + "\n")
+    else:
+        sys.stdout.write(output_json + "\n")
 
 
 if __name__ == "__main__":
