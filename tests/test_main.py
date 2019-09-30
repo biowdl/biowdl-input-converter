@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import shutil
+import os
 import sys
 import tempfile
 from pathlib import Path
@@ -48,7 +48,8 @@ def correct_md5sum_samplesheet():
             f'"{str(r2.absolute())}",126a8a51b9d1bbd07fddc65819a542c3\n',
             ])
     yield temp_csv
-    shutil.rmtree(str(tempdir))
+    os.remove(temp_csv)
+    os.removedirs(str(tempdir))
 
 
 def test_samplesheet_to_json_no_checks():
@@ -107,3 +108,18 @@ def test_main_validate(correct_md5sum_samplesheet, capsys):
     biowdl_input_converter.main()
     stdout = capsys.readouterr().out
     assert stdout == ""
+
+
+def test_main_output_file(correct_md5sum_samplesheet):
+    output_file = Path(tempfile.mkstemp()[1])
+    sys.argv = ["biowdl-input-converter",
+                "--check-file-md5sums",
+                "-o", str(output_file),
+                str(correct_md5sum_samplesheet)]
+    biowdl_input_converter.main()
+    output_contents = output_file.read_text()
+    correct_output = output_conversions.samplegroup_to_biowdl_new_json(
+        input_conversions.samplesheet_csv_to_samplegroup(
+            correct_md5sum_samplesheet)) + '\n'
+    assert output_contents == correct_output
+    os.remove(str(output_file))
