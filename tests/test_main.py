@@ -75,6 +75,13 @@ def test_yaml_samplesheet_to_json():
     assert output == correct_output
 
 
+def test_unknown_samplesheet_format():
+    samplesheet = Path("bla.customformat")
+    with pytest.raises(NotImplementedError) as error:
+        samplesheet_to_json(samplesheet)
+    error.match("Unsupported extension: .customformat")
+
+
 def test_samplesheet_md5_checks(correct_md5sum_samplesheet):
     samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True,
                         file_md5_check=True)

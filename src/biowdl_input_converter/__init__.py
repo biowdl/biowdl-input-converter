@@ -76,7 +76,7 @@ def samplesheet_to_json(samplesheet: Path,
             samplesheet)
     else:
         raise NotImplementedError(
-            f"Unknown extension: {samplesheet.suffix}")
+            f"Unsupported extension: {samplesheet.suffix}")
 
     if file_presence_check:
         samplegroup.test_files_exist()
