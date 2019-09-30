@@ -22,6 +22,16 @@ a format that can be easily processed by a BioWDL pipeline.
 For more information on BioWDL check out the documentation on
 https://biowdl.github.io.
 
+
+======
+Usage
+======
+
+.. argparse::
+   :module: biowdl_input_converter
+   :func: argument_parser
+   :prog: biowdl-input-converter
+
 ============
 Samplesheet
 ============
@@ -37,6 +47,8 @@ A samplesheet provides information about fastq files.
 - Reverse read (R2) md5sum
 - additional properties (if necessary)
 
+CSV/TSV Format
+--------------
 A samplesheet can be a comma- or tab-delimited file. An example looks like
 this
 
@@ -67,22 +79,64 @@ Microsoft Excel or LibreOffice Calc).
 
 Create a table:
 
+.. csv-table::
+    :file: csv_examples/example.csv
 
-+-------+--------+----------+--------+---------+--------+---------+----------+----------------+
-|sample |library |readgroup | R1     | R1_md5  |R2      |  R2_md5 |HiSeq4000 | other_property |
-+-------+--------+----------+--------+---------+--------+---------+----------+----------------+
-|s1     | lib1   |rg1       |r1_1.fq | af283ad |r2_1.fq |         |yes       |                |
-+-------+--------+----------+--------+---------|--------+---------+----------+----------------+
-|s2     | lib1   | rg1      |r2_1.fq |         |r2_2.fq |d82ca29  | no       |broccoli        |
-+-------+--------+----------+--------+---------+--------+---------+----------+----------------+
+.. NOTE::
+    Optional fields can be left blank.
 
-======
-Usage
-======
+And save the table as CSV or TSV format from your spreadsheet program.
 
-.. argparse::
-   :module: biowdl_input_converter
-   :func: argument_parser
-   :prog: biowdl-input-converter
+YAML format
+-----------
+Alternatively a YAML format can be used
+
+.. code-block::YAML
+    samples:
+        - id: s1
+          libraries:
+            - id: lib1
+              readgroups:
+                - id: rg1
+                  reads:
+                    R1: r1_1.fq
+                    R1_md5: 181a657e3f9c3cde2d3bb14ee7e894a3
+                    R2: r1_2.fq
+                    R2_md5: ebe473b62926dcf6b38548851715820e
+        - id: s2
+          libraries:
+            - id: lib1
+              readgroups:
+                - id: rg1
+                  reads:
+                    R1: r2_1.fq
+                    R1_md5: 7e79b87d95573b06ff2c5e49508e9dbf
+                    R2: r2_2.fq
+                    R2_md5: dc2776dc3a07c4f468455bae1a8ff872
+
+Optional fields can be omitted and extra properties can be added:
+
+.. code-block::YAML
+    samples:
+        - id: s1
+          HiSeq4000: no
+          libraries:
+            - id: lib1
+              readgroups:
+                - id: rg1
+                  reads:
+                    R1: r1_1.fq
+                    R1_md5: 181a657e3f9c3cde2d3bb14ee7e894a3
+                    R2: r1_2.fq
+        - id: s2
+          HiSeq4000: yes
+          libraries:
+            - id: lib1
+              readgroups:
+                - id: rg1
+                  reads:
+                    R1: r2_1.fq
+                    R2: r2_2.fq
+
 
 .. include:: CHANGELOG.rst
