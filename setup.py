@@ -26,7 +26,7 @@ LONG_DESCRIPTION = Path("README.rst").read_text()
 
 setup(
     name="biowdl-input-converter",
-    version="0.1.0",
+    version="0.2.0-dev",
     description="Converting various input formats into WDL structs for BioWDL "
                 "pipelines.",
     author="Leiden University Medical Center",
