@@ -70,6 +70,21 @@ def test_extra_field():
     assert samplesheet[1].additional_properties["extra_field2"] is None
 
 
+def test_mixed_empty_and_filled_additional_properties():
+    samplesheet = samplesheet_csv_to_samplegroup(
+        FILESDIR / Path("mixed_empty_filled_addprops.csv"))
+    assert len(samplesheet.samples) == 1
+    assert samplesheet[0].additional_properties["extra_field2"] == "xf2"
+
+
+def test_conflicting_properties():
+    with pytest.raises(ValueError) as error:
+        samplesheet_csv_to_samplegroup(
+            FILESDIR / Path("conflicting_properties.csv")
+        )
+    error.match("Conflicting fields in column 'extra_field1' for sample 's1'")
+
+
 def test_duplicate_readgroup():
     with pytest.raises(ValueError) as error:
         samplesheet_csv_to_samplegroup(

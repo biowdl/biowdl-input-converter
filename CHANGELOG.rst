@@ -9,6 +9,8 @@ Changelog
 
 0.2.0-dev
 ---------------
++ Make sure only one line of additional properties per sample is need in a
+  csv file.
 + Fix a bug where an empty field for an additional property in a csv
   samplesheet would be defined as ``""`` instead of ``None``.
 
