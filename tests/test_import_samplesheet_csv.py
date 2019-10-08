@@ -67,7 +67,7 @@ def test_extra_field():
     assert samplesheet[0].additional_properties["extra_field1"] == "xf1"
     assert samplesheet[0].additional_properties["extra_field2"] == "xf2"
     assert samplesheet[1].additional_properties["extra_field1"] == "xfI"
-    assert samplesheet[1].additional_properties["extra_field2"] == "xfII"
+    assert samplesheet[1].additional_properties["extra_field2"] is None
 
 
 def test_duplicate_readgroup():

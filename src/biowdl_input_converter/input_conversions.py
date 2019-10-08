@@ -102,5 +102,8 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
         }
         # Add all remaining properties to additional properties at the
         # sample level
-        samples[sample]["additional_properties"] = row_dict
+        samples[sample]["additional_properties"] = {
+            key: value if value != "" else None
+            for key, value in row_dict.items()
+        }
     return SampleGroup.from_dict_of_dicts(samples)
