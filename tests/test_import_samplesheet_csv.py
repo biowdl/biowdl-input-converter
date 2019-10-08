@@ -82,6 +82,7 @@ def test_conflicting_properties():
         samplesheet_csv_to_samplegroup(
             FILESDIR / Path("conflicting_properties.csv")
         )
+    error.match("Conflicting fields in column 'extra_field1' for sample 's1'")
 
 
 def test_duplicate_readgroup():
