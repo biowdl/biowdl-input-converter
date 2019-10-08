@@ -102,5 +102,22 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
         }
         # Add all remaining properties to additional properties at the
         # sample level
-        samples[sample]["additional_properties"] = row_dict
+        if "additional_properties" not in samples[sample].keys():
+            samples[sample]["additional_properties"] = {}
+        for key, value in row_dict.items():
+            existing_value = samples[sample][
+                "additional_properties"].get(key, None)
+
+            updated_value = value if value != "" else None
+
+            if existing_value is None:
+                samples[sample]["additional_properties"][key] = updated_value
+            else:
+                if (updated_value is not None
+                        and existing_value != updated_value):
+                    raise ValueError(
+                        f"Conflicting fields in column '{key}' for sample "
+                        f"'{sample}'!"
+                    )
+
     return SampleGroup.from_dict_of_dicts(samples)
