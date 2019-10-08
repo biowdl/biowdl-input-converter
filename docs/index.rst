@@ -80,6 +80,25 @@ Additional properties at the sample level can be set using additional columns:
     "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",,"yes","pizza"
     "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",,"no","broccoli"
 
+Additional properties for the same sample only have to be defined in one line.
+This saves a lot of duplication for samples with a high readgroup or library
+count an makes it easier to read the file.
+
+.. code-block:: text
+
+    "sample","library","readgroup","R1","R1_md5","R2","R2_md5","HiSeq4000","other_property"
+    "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",,"yes","pizza"
+    "s1","lib1","rg2","r1_1.fq",,"r1_2.fq",,,
+    "s1","lib2","rg1","r1_1.fq",,"r1_2.fq",,,
+    "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",,"no","broccoli"
+    "s2","lib1","rg2","r2_1.fq",,"r2_2.fq",,,
+    "s2","lib1","rg3","r2_1.fq",,"r2_2.fq",,,
+
+If an additional column is filled with two conflicting values for the same
+sample an error will be thrown.
+
+Creating comma-delimited files
+------------------------------
 These files can be easily generated using a spreadsheet program (such as 
 Microsoft Excel or LibreOffice Calc). 
 
