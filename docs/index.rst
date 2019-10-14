@@ -64,13 +64,21 @@ this
     "s1","lib1","rg1","r1_1.fq","181a657e3f9c3cde2d3bb14ee7e894a3","r1_2.fq","ebe473b62926dcf6b38548851715820e"
     "s2","lib1","rg1","r2_1.fq","7e79b87d95573b06ff2c5e49508e9dbf","r2_2.fq","dc2776dc3a07c4f468455bae1a8ff872"
 
-The md5sums are optional and can be left out:
+The md5sum fields are optional and can be left out:
 
 .. code-block:: text
 
     "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
     "s1","lib1","rg1","r1_1.fq",,"r1_2.fq",
     "s2","lib1","rg1","r2_1.fq",,"r2_2.fq",
+
+The R1_md5, R2 and R2_md5 columns are optional and can be left out entirely.
+
+.. code-block:: text
+
+    "sample","library","readgroup","R1"
+    "s1","lib1","rg1","r1_1.fq"
+    "s2","lib1","rg1","r2_1.fq"
 
 Additional properties at the sample level can be set using additional columns:
 
