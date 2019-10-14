@@ -7,6 +7,11 @@ Changelog
 .. NOTE: This document is user facing. Please word the changes in such a way
 .. that users understand how the changes affect the new version.
 
+0.3.0-dev
+---------------
++ Bugfix: R1_md5 and R2_md5 columns are not required to be defined anymore in a
+  csv file.
+
 0.2.0
 ---------------
 + Make sure only one line of additional properties per sample is need in a
