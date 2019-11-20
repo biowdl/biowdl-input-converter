@@ -20,4 +20,5 @@ matrix:
           pkg_path=$(find .tox/py*/lib/python*/site-packages/biowdl_input_converter -maxdepth 0 -type d);
           sed -i "s:${pkg_path}:src/biowdl_input_converter:g" coverage.xml'
         - codecov -v  # -v to make sure coverage upload works.
-
+    - env: TOX_ENV=py38
+      python: 3.8
