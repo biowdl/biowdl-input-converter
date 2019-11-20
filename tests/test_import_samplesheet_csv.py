@@ -85,6 +85,28 @@ def test_conflicting_properties():
     error.match("Conflicting fields in column 'extra_field1' for sample 's1'")
 
 
+def test_no_optional_fields():
+    samplesheet = samplesheet_csv_to_samplegroup(
+        FILESDIR / Path("no_optional_fields.csv"))
+    assert samplesheet[0].id == "s1"
+    assert samplesheet[0].libraries[0].id == "lib1"
+    assert samplesheet[0].libraries[0].readgroups[0].id == "rg1"
+    assert samplesheet[0].libraries[0].readgroups[0].R1 == "r1.fq"
+    assert samplesheet[0].libraries[0].readgroups[0].R1_md5 is None
+    assert samplesheet[0].libraries[0].readgroups[0].R2 is None
+    assert samplesheet[0].libraries[0].readgroups[0].R2_md5 is None
+    assert samplesheet[0].libraries[0].readgroups[0].additional_properties == {}  # noqa: E501
+
+    assert samplesheet[1].id == "s2"
+    assert samplesheet[1].libraries[0].id == "lib1"
+    assert samplesheet[1].libraries[0].readgroups[0].id == "rg1"
+    assert samplesheet[1].libraries[0].readgroups[0].R1 == "r1.fq"
+    assert samplesheet[1].libraries[0].readgroups[0].R1_md5 is None
+    assert samplesheet[1].libraries[0].readgroups[0].R2 is None
+    assert samplesheet[1].libraries[0].readgroups[0].R2_md5 is None
+    assert samplesheet[1].libraries[0].readgroups[0].additional_properties == {}  # noqa: E501
+
+
 def test_duplicate_readgroup():
     with pytest.raises(ValueError) as error:
         samplesheet_csv_to_samplegroup(

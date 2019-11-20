@@ -91,8 +91,8 @@ def samplesheet_csv_to_samplegroup(samplesheet_file: Path) -> SampleGroup:
             samples[sample][lib] = {}
         if readgroup in samples[sample][lib].keys():
             raise ValueError(f"Duplicate readgroup id {rg_id}")
-        read1_md5 = row_dict.pop("R1_md5")
-        read2_md5 = row_dict.pop("R2_md5")
+        read1_md5 = row_dict.pop("R1_md5", None)
+        read2_md5 = row_dict.pop("R2_md5", None)
         read2 = row_dict.pop("R2", None)
         samples[sample][lib][readgroup] = {
             "R1": row_dict.pop("R1"),
