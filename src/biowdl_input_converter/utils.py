@@ -22,10 +22,11 @@
 Contains general functions that are not specific to biowdl_input_converter.
 """
 
+import collections
 import csv
 import hashlib
 import os
-from typing import Dict, Generator, Union
+from typing import Dict, Generator, Iterable, Tuple, Union
 
 
 def csv_to_dict_generator(csv_file: Union[str, os.PathLike]
@@ -77,3 +78,30 @@ def file_md5sum(filepath: Union[str, os.PathLike],
         for block in iter(lambda: file_handler.read(blocksize), b''):
             hasher.update(block)
     return hasher.hexdigest()
+
+
+def check_existence_list_of_files(files: Iterable[Union[str, os.PathLike]]):
+    # Create a list of files that do not exist
+    non_existing_files = [file for file in files if not os.path.exists(file)]
+    if len(non_existing_files) > 0:
+        raise FileNotFoundError(f"The following files can not be found: "
+                                f"{', '.join(non_existing_files)}.")
+
+
+def check_md5sums(files_and_sums: Iterable[Tuple[Union[str, os.PathLike], str]]
+                  ):
+    incorrect_files = [file for file, sum in files_and_sums
+                       if not file_md5sum(file) == sum]
+    if len(incorrect_files) > 0:
+        raise ValueError(f"The following files have incorrect md5sums: "
+                         f"{', '.join(incorrect_files)}")
+
+
+def check_duplicate_files(files: Iterable[Union[str, os.PathLike]]):
+    # Normpath is used to eliminate meaningless differences between paths.
+    counted_files = collections.Counter(map(os.path.normpath, files))
+    duplicated_paths = [path for path, count in counted_files.items()
+                        if count > 1]
+    if len(duplicated_paths) > 0:
+        raise ValueError(f"The following files occur multiple times: "
+                         f"{', '.join(set(duplicated_paths))}")

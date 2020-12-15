@@ -27,6 +27,8 @@ import argparse
 from pathlib import Path
 
 from . import input_conversions, output_conversions
+from .utils import check_duplicate_files, check_existence_list_of_files, \
+    check_md5sums
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -56,7 +58,8 @@ def argument_parser() -> argparse.ArgumentParser:
 def samplesheet_to_json(samplesheet: Path,
                         old_style_json: bool = False,
                         file_presence_check: bool = True,
-                        file_md5_check: bool = False) -> str:
+                        file_md5_check: bool = False,
+                        file_duplication_check: bool = True) -> str:
     """
     Converts a samplesheet file to JSON
     :param samplesheet:
@@ -78,9 +81,11 @@ def samplesheet_to_json(samplesheet: Path,
             f"Unsupported extension: {samplesheet.suffix}")
 
     if file_presence_check:
-        samplegroup.test_files_exist()
+        check_existence_list_of_files(samplegroup.files())
     if file_md5_check:
-        samplegroup.test_file_checksums()
+        check_md5sums(samplegroup.files_and_md5sums())
+    if file_duplication_check:
+        check_duplicate_files(samplegroup.files())
 
     if old_style_json:
         output_json = output_conversions.samplegroup_to_biowdl_old_json(

@@ -47,21 +47,6 @@ class Node(Iterable):
         for node in self:
             yield from node.files()
 
-    def test_files_exist(self):
-        for file in self.files():
-            if not os.path.exists(file):
-                raise FileNotFoundError(file)
-
-    def test_file_checksums(self):
-        for file, md5sum in self.files_and_md5sums():
-            if md5sum is None:
-                continue
-            file_checksum = file_md5sum(file)
-            if not file_checksum == md5sum:
-                raise ValueError(
-                    f"md5sum '{file_checksum}' not equal to '{md5sum}' for "
-                    f"file {file}.")
-
 
 @dataclass()
 class ReadGroup(Node):

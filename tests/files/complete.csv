@@ -1,3 +1,3 @@
 "sample","library","readgroup","R1","R1_md5","R2","R2_md5"
-"s1","lib1","rg1","r1.fq","hello","r2.fq","hey"
-"s2","lib1","rg1","r1.fq","aa","r2.fq","bb"
+"s1","lib1","rg1","s1/r1.fq","hello","s1/r2.fq","hey"
+"s2","lib1","rg1","s2/r1.fq","aa","s2/r2.fq","bb"
