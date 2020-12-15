@@ -99,7 +99,8 @@ def check_md5sums(files_and_sums: Iterable[Tuple[Union[str, os.PathLike], str]]
 
 def check_duplicate_files(files: Iterable[Union[str, os.PathLike]]):
     # Normpath is used to eliminate meaningless differences between paths.
-    counted_files = collections.Counter(map(os.path.normpath, files))
+    counted_files = collections.Counter(os.path.normpath(file)
+                                        for file in files)
     duplicated_paths = [path for path, count in counted_files.items()
                         if count > 1]
     if len(duplicated_paths) > 0:

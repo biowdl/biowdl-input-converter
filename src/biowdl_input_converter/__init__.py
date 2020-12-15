@@ -88,7 +88,10 @@ def samplesheet_to_json(samplesheet: Path,
     if file_presence_check:
         check_existence_list_of_files(samplegroup.files())
     if file_md5_check:
-        check_md5sums(samplegroup.files_and_md5sums())
+        files_with_sums = ((file, sum) for file, sum in
+                           samplegroup.files_and_md5sums()
+                           if sum is not None)
+        check_md5sums(files_with_sums)
     if file_duplication_check:
         check_duplicate_files(samplegroup.files())
 
