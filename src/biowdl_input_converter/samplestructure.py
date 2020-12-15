@@ -30,15 +30,37 @@ https://www.youtube.com/watch?v=T-TwcmT6Rcw, or the python docs,
 https://docs.python.org/3/library/dataclasses.html, for more information.
 """
 
+import os
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, Iterable, List, Optional, Tuple
 
 from .utils import file_md5sum
 
 
+class Node(Iterable):
+    def files_and_md5sums(self) -> Generator[Tuple[str, Optional[str]],
+                                             None, None]:
+        for node in self:
+            yield from node.files_and_md5sums()
+
+    def test_files_exist(self):
+        for file, _ in self.files_and_md5sums():
+            if not os.path.exists(file):
+                raise FileNotFoundError(file)
+
+    def test_file_checksums(self):
+        for file, md5sum in self.files_and_md5sums():
+            if md5sum is None:
+                continue
+            file_checksum = file_md5sum(file)
+            if not file_checksum == md5sum:
+                raise ValueError(
+                    f"md5sum '{file_checksum}' not equal to '{md5sum}' for "
+                    f"file {file}.")
+
+
 @dataclass()
-class ReadGroup:
+class ReadGroup(Node):
     """
     Contains the paths and md5sums to a forward read (R1) and reverse read
     (R2) for a lane in the sequencer.
@@ -68,30 +90,18 @@ class ReadGroup:
             rg_dict["R2_md5"] = self.R2_md5
         return rg_dict
 
-    def test_files_exist(self):
-        if not Path(self.R1).exists():
-            raise FileNotFoundError(self.R1)
+    def files_and_md5sums(self) -> Generator[Tuple[str, Optional[str]],
+                                             None, None]:
+        yield self.R1, self.R1_md5
         if self.R2 is not None:
-            if not Path(self.R2).exists():
-                raise FileNotFoundError(self.R2)
+            yield self.R2, self.R2_md5
 
-    def test_file_checksums(self):
-        if self.R1_md5 is not None:
-            read1_md5 = file_md5sum(Path(self.R1))
-            if not read1_md5 == self.R1_md5:
-                raise ValueError(
-                    f"md5sum '{self.R1_md5}' not equal to '{read1_md5}' for "
-                    f"file {self.R1}.")
-        if self.R2 is not None and self.R2_md5 is not None:
-            read2_md5 = file_md5sum(Path(self.R2))
-            if not read2_md5 == self.R2_md5:
-                raise ValueError(
-                    f"md5sum '{self.R2_md5}' not equal to '{read2_md5}' for "
-                    f"file {self.R2}.")
+    def __iter__(self):
+        return iter([self])
 
 
 @dataclass()
-class Library:
+class Library(Node):
     """
     Contains all the sequenced readgroups for this sample library. A sample
     library is a preparation of the sample's DNA to be sequenced. This can
@@ -107,7 +117,7 @@ class Library:
     def __getitem__(self, item: int):
         return self.readgroups[item]
 
-    def append_readgroup(self, readgroup: ReadGroup):
+    def append(self, readgroup: ReadGroup):
         """
         Append a readgroup to this library.
         :param readgroup: a Readgroup object.
@@ -118,17 +128,9 @@ class Library:
             raise TypeError("Only readgroup objects can be appended to the "
                             "library.")
 
-    def test_files_exist(self):
-        for readgroup in self:
-            readgroup.test_files_exist()
-
-    def test_file_checksums(self):
-        for readgroup in self:
-            readgroup.test_file_checksums()
-
 
 @dataclass()
-class Sample:
+class Sample(Node):
     """
     The biological sample and its libraries. While in theory you can have
     multiple preparations of the sample for sequencing (libraries) in practice
@@ -144,7 +146,7 @@ class Sample:
     def __getitem__(self, item: int):
         return self.libraries[item]
 
-    def append_library(self, library: Library):
+    def append(self, library: Library):
         """
         Append a library to this sample
         :param library: a library object
@@ -155,17 +157,9 @@ class Sample:
             raise TypeError("Only library objects can be appended to the "
                             "sample.")
 
-    def test_files_exist(self):
-        for library in self:
-            library.test_files_exist()
-
-    def test_file_checksums(self):
-        for library in self:
-            library.test_file_checksums()
-
 
 @dataclass()
-class SampleGroup:
+class SampleGroup(Node):
     """A group of samples that are analysed together"""
     samples: List[Sample] = field(default_factory=list)
 
@@ -175,7 +169,7 @@ class SampleGroup:
     def __getitem__(self, item: int):
         return self.samples[item]
 
-    def append_sample(self, sample: Sample):
+    def append(self, sample: Sample):
         """
         Append a sample object to the sample group.
         :param sample: a Sample object.
@@ -185,14 +179,6 @@ class SampleGroup:
         else:
             raise TypeError("Only sample objects can be appended to the "
                             "samplegroup.")
-
-    def test_files_exist(self):
-        for sample in self:
-            sample.test_files_exist()
-
-    def test_file_checksums(self):
-        for sample in self:
-            sample.test_file_checksums()
 
     @classmethod
     def from_dict_of_dicts(cls, dict_of_dicts: Dict[str, Any]):
@@ -215,7 +201,7 @@ class SampleGroup:
                         "additional_properties", {})
                 )
                 for rg_id, rg_dict in lib_dict.items():
-                    library.append_readgroup(ReadGroup(
+                    library.append(ReadGroup(
                         id=rg_id,
                         R1=rg_dict["R1"],
                         R1_md5=rg_dict.get("R1_md5", None),
@@ -224,6 +210,6 @@ class SampleGroup:
                         additional_properties=rg_dict.get(
                             "additional_properties", {})
                     ))
-                sample.append_library(library)
-            samplegroup.append_sample(sample)
+                sample.append(library)
+            samplegroup.append(sample)
         return samplegroup

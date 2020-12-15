@@ -64,42 +64,42 @@ def test_readgroup_with_md5s_as_dict():
 def test_library_append_and_access():
     readgroup = ReadGroup(id="bla", R1="bla.fq")
     library = Library(id="blalib")
-    library.append_readgroup(readgroup)
+    library.append(readgroup)
     assert library[0] == readgroup
 
 
 def test_incorrect_library_append():
     library = Library("lib1")
     with pytest.raises(TypeError) as error:
-        library.append_readgroup("rg1")
+        library.append("rg1")
     assert error.match("Only readgroup ")
 
 
 def test_sample_append_and_access():
     library = Library(id="blalib")
     sample = Sample(id="blasample")
-    sample.append_library(library)
+    sample.append(library)
     assert sample[0] == library
 
 
 def test_incorrect_sample_append():
     sample = Sample("sample1")
     with pytest.raises(TypeError) as error:
-        sample.append_library("lib1")
+        sample.append("lib1")
     assert error.match("Only library")
 
 
 def test_samplegroup_append_and_access():
     sample = Sample(id="blasample")
     samplegroup = SampleGroup()
-    samplegroup.append_sample(sample)
+    samplegroup.append(sample)
     assert samplegroup[0] == sample
 
 
 def test_incorrect_samplegroup_append():
     samplegroup = SampleGroup()
     with pytest.raises(TypeError) as error:
-        samplegroup.append_sample("sample1")
+        samplegroup.append("sample1")
     assert error.match("Only sample ")
 
 
