@@ -46,9 +46,14 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--old", action="store_true", dest="old_style_json",
                         help="Output old style JSON as used in BioWDL "
                              "germline-DNA and RNA-seq version 1 pipelines")
-    parser.add_argument("--skip-file-check", action="store_true",
+    parser.add_argument("--skip-file-check", action="store_false",
+                        dest="file_check",
                         help="Skip the checking if files in the samplesheet "
                              "are present.")
+    parser.add_argument("--skip-duplicate-check", action="store_false",
+                        dest="duplicate_check",
+                        help="Skip the checks for duplicate files in the "
+                             "samplesheet.")
     parser.add_argument("--check-file-md5sums", action="store_true",
                         help="Do a md5sum check for reads which have md5sums "
                              "added in the samplesheet.")
@@ -101,7 +106,8 @@ def main():
     output_json = samplesheet_to_json(
         samplesheet=Path(args.samplesheet),
         old_style_json=args.old_style_json,
-        file_presence_check=not args.skip_file_check,
+        file_presence_check=args.file_check,
+        file_duplication_check= args.duplicate_check,
         file_md5_check=args.check_file_md5sums)
 
     # Only generate output if not validating.
