@@ -17,14 +17,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from pathlib import Path
 
 from biowdl_input_converter.samplestructure import Library, ReadGroup, \
     Sample, SampleGroup
 
 import pytest
-
-from . import FILESDIR
 
 
 def test_readgroup_as_dict():

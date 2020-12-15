@@ -107,7 +107,7 @@ def main():
         samplesheet=Path(args.samplesheet),
         old_style_json=args.old_style_json,
         file_presence_check=args.file_check,
-        file_duplication_check= args.duplicate_check,
+        file_duplication_check=args.duplicate_check,
         file_md5_check=args.check_file_md5sums)
 
     # Only generate output if not validating.

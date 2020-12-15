@@ -30,11 +30,8 @@ https://www.youtube.com/watch?v=T-TwcmT6Rcw, or the python docs,
 https://docs.python.org/3/library/dataclasses.html, for more information.
 """
 
-import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, Generator, Iterable, List, Optional, Tuple
-
-from .utils import file_md5sum
 
 
 class Node(Iterable):
