@@ -43,8 +43,12 @@ class Node(Iterable):
         for node in self:
             yield from node.files_and_md5sums()
 
+    def files(self) -> Generator[str, None, None]:
+        for node in self:
+            yield from node.files()
+
     def test_files_exist(self):
-        for file, _ in self.files_and_md5sums():
+        for file in self.files():
             if not os.path.exists(file):
                 raise FileNotFoundError(file)
 
@@ -95,6 +99,11 @@ class ReadGroup(Node):
         yield self.R1, self.R1_md5
         if self.R2 is not None:
             yield self.R2, self.R2_md5
+
+    def files(self) -> Generator[str, None, None]:
+        yield self.R1
+        if self.R2 is not None:
+            yield self.R2
 
     def __iter__(self):
         return iter([self])
