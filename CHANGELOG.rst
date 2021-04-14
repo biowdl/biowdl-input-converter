@@ -9,6 +9,7 @@ Changelog
 
 0.3.0-dev
 ---------------
++ Added option to specify samplesheet fileformat explicitly
 + Added tests for python 3.8
 
 0.2.1

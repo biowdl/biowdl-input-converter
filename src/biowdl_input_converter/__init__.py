@@ -34,7 +34,11 @@ def argument_parser() -> argparse.ArgumentParser:
         description="Parse samplesheets for BioWDL pipelines.")
     parser.add_argument("samplesheet", type=str,
                         help="The input samplesheet. Format will be "
-                             "automatically detected.")
+                             "automatically detected from file suffix "
+                             "if --format argument not provided")
+    parser.add_argument("-f", "--format", type=str,
+                        help="The input samplesheet format - "
+                              "tsv, csv, json, or yaml")
     parser.add_argument("-o", "--output",
                         help="The output file to which the json is written. "
                              "Default: stdout")
@@ -54,23 +58,30 @@ def argument_parser() -> argparse.ArgumentParser:
 
 
 def samplesheet_to_json(samplesheet: Path,
+                        fileformat: str = None,
                         old_style_json: bool = False,
                         file_presence_check: bool = True,
                         file_md5_check: bool = False) -> str:
     """
     Converts a samplesheet file to JSON
     :param samplesheet:
+    :param fileformat: tsv, csv, yaml, yml, json
     :param old_style_json: Return a BioWDL old-style pipeline JSON
     :param file_presence_check: Check if the files in the samplesheet are
     present
     :param file_md5_check: Check if the md5sums for the files are correct
     :return: a JSON string presenting the BioWDL JSON.
     """
-    if samplesheet.suffix in [".tsv", ".csv"]:
+    if fileformat is not None:
+        filetype = fileformat.lower().replace('.', '')
+    else:
+        filetype = samplesheet.suffix.lower().replace('.','')
+
+    if filetype in ["tsv", "csv"]:
         samplegroup = input_conversions.samplesheet_csv_to_samplegroup(
             samplesheet)
     # JSON can also be parsed by a YAML parser.
-    elif samplesheet.suffix in [".yaml", ".yml", ".json"]:
+    elif filetype in ["yaml", "yml", "json"]:
         samplegroup = input_conversions.biowdl_yaml_to_samplegroup(
             samplesheet)
     else:
@@ -93,11 +104,7 @@ def samplesheet_to_json(samplesheet: Path,
 
 def main():
     args = argument_parser().parse_args()
-    output_json = samplesheet_to_json(
-        samplesheet=Path(args.samplesheet),
-        old_style_json=args.old_style_json,
-        file_presence_check=not args.skip_file_check,
-        file_md5_check=args.check_file_md5sums)
+    output_json = samplesheet_to_json(samplesheet=Path(args.samplesheet), fileformat=args.format, old_style_json=args.old_style_json, file_presence_check=not args.skip_file_check, file_md5_check=args.check_file_md5sums)
 
     # Only generate output if not validating.
     if not args.validate:

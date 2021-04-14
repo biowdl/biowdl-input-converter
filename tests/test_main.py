@@ -59,22 +59,26 @@ def test_samplesheet_to_json_no_checks():
     assert output == correct_output
 
 
+
 def test_samplesheet_to_old_style_json():
-    output = samplesheet_to_json(COMPLETE_CSV, file_presence_check=False,
-                                 old_style_json=True)
+    output = samplesheet_to_json(COMPLETE_CSV, old_style_json=True, file_presence_check=False)
     correct_output = output_conversions.samplegroup_to_biowdl_old_json(
         input_conversions.samplesheet_csv_to_samplegroup(COMPLETE_CSV))
     assert output == correct_output
 
-
 def test_yaml_samplesheet_to_json():
     samplesheet = FILESDIR / Path("complete.yml")
-    output = samplesheet_to_json(samplesheet,
-                                 file_presence_check=False)
+    output = samplesheet_to_json(samplesheet, file_presence_check=False)
     correct_output = output_conversions.samplegroup_to_biowdl_new_json(
         input_conversions.biowdl_yaml_to_samplegroup(samplesheet))
     assert output == correct_output
 
+def test_nosuffix():
+    samplesheet = FILESDIR / Path("804935870934875")
+    output = samplesheet_to_json(samplesheet, fileformat='yaml')
+    correct_output = output_conversions.samplegroup_to_biowdl_new_json(
+        input_conversions.biowdl_yaml_to_samplegroup(samplesheet))
+    assert output == correct_output
 
 def test_unknown_samplesheet_format():
     samplesheet = Path("bla.customformat")
@@ -84,8 +88,7 @@ def test_unknown_samplesheet_format():
 
 
 def test_samplesheet_md5_checks(correct_md5sum_samplesheet):
-    samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True,
-                        file_md5_check=True)
+    samplesheet_to_json(correct_md5sum_samplesheet, file_presence_check=True, file_md5_check=True)
 
 
 def test_main(correct_md5sum_samplesheet, capsys):
