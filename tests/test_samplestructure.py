@@ -17,14 +17,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from pathlib import Path
 
 from biowdl_input_converter.samplestructure import Library, ReadGroup, \
     Sample, SampleGroup
 
 import pytest
-
-from . import FILESDIR
 
 
 def test_readgroup_as_dict():
@@ -64,42 +61,42 @@ def test_readgroup_with_md5s_as_dict():
 def test_library_append_and_access():
     readgroup = ReadGroup(id="bla", R1="bla.fq")
     library = Library(id="blalib")
-    library.append_readgroup(readgroup)
+    library.append(readgroup)
     assert library[0] == readgroup
 
 
 def test_incorrect_library_append():
     library = Library("lib1")
     with pytest.raises(TypeError) as error:
-        library.append_readgroup("rg1")
+        library.append("rg1")
     assert error.match("Only readgroup ")
 
 
 def test_sample_append_and_access():
     library = Library(id="blalib")
     sample = Sample(id="blasample")
-    sample.append_library(library)
+    sample.append(library)
     assert sample[0] == library
 
 
 def test_incorrect_sample_append():
     sample = Sample("sample1")
     with pytest.raises(TypeError) as error:
-        sample.append_library("lib1")
+        sample.append("lib1")
     assert error.match("Only library")
 
 
 def test_samplegroup_append_and_access():
     sample = Sample(id="blasample")
     samplegroup = SampleGroup()
-    samplegroup.append_sample(sample)
+    samplegroup.append(sample)
     assert samplegroup[0] == sample
 
 
 def test_incorrect_samplegroup_append():
     samplegroup = SampleGroup()
     with pytest.raises(TypeError) as error:
-        samplegroup.append_sample("sample1")
+        samplegroup.append("sample1")
     assert error.match("Only sample ")
 
 
@@ -120,87 +117,3 @@ def test_samplegroup_from_dict_of_dicts():
             ])])
     ])
     assert SampleGroup.from_dict_of_dicts(dict_of_dicts) == samplegroup
-
-
-def test_file_existence():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    samplegroup = SampleGroup([Sample("s1", [Library("l1", [
-        ReadGroup(
-            id="r1",
-            R1=str(reads_dir / Path("R1.fq")),
-            R2=str(reads_dir / Path("R2.fq")),
-            R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
-            R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
-        )
-    ])])])
-    samplegroup.test_files_exist()
-
-
-def test_file_md5sums():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    samplegroup = SampleGroup([Sample("s1", [Library("l1", [
-        ReadGroup(
-            id="r1",
-            R1=str(reads_dir / Path("R1.fq")),
-            R2=str(reads_dir / Path("R2.fq")),
-            R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
-            R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
-        )
-    ])])])
-    samplegroup.test_file_checksums()
-
-
-def test_read1_not_exist():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    readgroup = ReadGroup(
-        id="r1",
-        R1=str(reads_dir / Path("R3.fq")),
-        R2=str(reads_dir / Path("R2.fq")),
-        R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
-        R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
-    )
-    with pytest.raises(FileNotFoundError) as error:
-        readgroup.test_files_exist()
-    assert error.match("R3.fq")
-
-
-def test_read2_not_exist():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    readgroup = ReadGroup(
-        id="r1",
-        R1=str(reads_dir / Path("R1.fq")),
-        R2=str(reads_dir / Path("R3.fq")),
-        R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
-        R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
-    )
-    with pytest.raises(FileNotFoundError) as error:
-        readgroup.test_files_exist()
-    assert error.match("R3.fq")
-
-
-def test_incorrect_md5sum_r1():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    readgroup = ReadGroup(
-        id="r1",
-        R1=str(reads_dir / Path("R1.fq")),
-        R2=str(reads_dir / Path("R2.fq")),
-        R1_md5="incorrect_md5sum",
-        R2_md5="126a8a51b9d1bbd07fddc65819a542c3"
-    )
-    with pytest.raises(ValueError) as error:
-        readgroup.test_file_checksums()
-    assert error.match("tests/files/data/R1.fq")
-
-
-def test_incorrect_md5sum_r2():
-    reads_dir = (Path(FILESDIR) / Path("data")).absolute()
-    readgroup = ReadGroup(
-        id="r1",
-        R1=str(reads_dir / Path("R1.fq")),
-        R2=str(reads_dir / Path("R2.fq")),
-        R1_md5="d8e8fca2dc0f896fd7cb4cb0031ba249",
-        R2_md5="incorrect_md5sum"
-    )
-    with pytest.raises(ValueError) as error:
-        readgroup.test_file_checksums()
-    assert error.match("tests/files/data/R2.fq")

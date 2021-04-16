@@ -27,6 +27,8 @@ import argparse
 from pathlib import Path
 
 from . import input_conversions, output_conversions
+from .utils import check_duplicate_files, check_existence_list_of_files, \
+    check_md5sums
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -44,9 +46,14 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--old", action="store_true", dest="old_style_json",
                         help="Output old style JSON as used in BioWDL "
                              "germline-DNA and RNA-seq version 1 pipelines")
-    parser.add_argument("--skip-file-check", action="store_true",
+    parser.add_argument("--skip-file-check", action="store_false",
+                        dest="file_check",
                         help="Skip the checking if files in the samplesheet "
                              "are present.")
+    parser.add_argument("--skip-duplicate-check", action="store_false",
+                        dest="duplicate_check",
+                        help="Skip the checks for duplicate files in the "
+                             "samplesheet.")
     parser.add_argument("--check-file-md5sums", action="store_true",
                         help="Do a md5sum check for reads which have md5sums "
                              "added in the samplesheet.")
@@ -56,7 +63,8 @@ def argument_parser() -> argparse.ArgumentParser:
 def samplesheet_to_json(samplesheet: Path,
                         old_style_json: bool = False,
                         file_presence_check: bool = True,
-                        file_md5_check: bool = False) -> str:
+                        file_md5_check: bool = False,
+                        file_duplication_check: bool = True) -> str:
     """
     Converts a samplesheet file to JSON
     :param samplesheet:
@@ -78,9 +86,14 @@ def samplesheet_to_json(samplesheet: Path,
             f"Unsupported extension: {samplesheet.suffix}")
 
     if file_presence_check:
-        samplegroup.test_files_exist()
+        check_existence_list_of_files(samplegroup.files())
     if file_md5_check:
-        samplegroup.test_file_checksums()
+        files_with_sums = ((file, sum) for file, sum in
+                           samplegroup.files_and_md5sums()
+                           if sum is not None)
+        check_md5sums(files_with_sums)
+    if file_duplication_check:
+        check_duplicate_files(samplegroup.files())
 
     if old_style_json:
         output_json = output_conversions.samplegroup_to_biowdl_old_json(
@@ -96,7 +109,8 @@ def main():
     output_json = samplesheet_to_json(
         samplesheet=Path(args.samplesheet),
         old_style_json=args.old_style_json,
-        file_presence_check=not args.skip_file_check,
+        file_presence_check=args.file_check,
+        file_duplication_check=args.duplicate_check,
         file_md5_check=args.check_file_md5sums)
 
     # Only generate output if not validating.

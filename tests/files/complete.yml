@@ -5,9 +5,9 @@ samples:
     readgroups:
     - id: rg1
       reads:
-        R1: r1.fq
+        R1: s1/r1.fq
         R1_md5: hello
-        R2: r2.fq
+        R2: s1/r2.fq
         R2_md5: hey
 - id: s2
   libraries:
@@ -15,7 +15,7 @@ samples:
     readgroups:
     - id: rg1
       reads:
-        R1: r1.fq
+        R1: s2/r1.fq
         R1_md5: aa
-        R2: r2.fq
+        R2: s2/r2.fq
         R2_md5: bb
