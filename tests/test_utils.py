@@ -20,7 +20,10 @@
 
 from pathlib import Path
 
-from biowdl_input_converter.utils import csv_to_dict_generator
+from biowdl_input_converter.utils import (check_duplicate_files,
+                                          check_existence_list_of_files,
+                                          check_md5sums,
+                                          csv_to_dict_generator)
 
 import pytest
 
@@ -38,3 +41,47 @@ def test_empty_csv():
     with pytest.raises(ValueError) as error:
         list(csv_to_dict_generator(empty_csv))
     assert error.match("Could not parse CSV file")
+
+
+def test_check_existence_list_of_files():
+    check_existence_list_of_files([FILESDIR / "complete.csv",
+                                   FILESDIR / "complete.yml"])
+
+
+def test_check_existence_list_of_files_with_fails():
+    with pytest.raises(FileNotFoundError) as error:
+        check_existence_list_of_files([FILESDIR / "illuminati.txt",
+                                       FILESDIR / "trolls.txt"])
+    assert error.match("illuminati.txt")
+    assert error.match("trolls.txt")
+
+
+def test_check_md5sums():
+    check_md5sums([(
+        FILESDIR / "empty.csv", "d41d8cd98f00b204e9800998ecf8427e")])
+
+
+def test_check_md5sums_with_fails():
+    with pytest.raises(ValueError) as error:
+        check_md5sums([
+            (FILESDIR / "empty.csv", "d41d8cd98f00b204e9800998ecf8427e"),
+            (FILESDIR / "extra_fields.csv", "XXXX"),
+            (FILESDIR / "missing_field.csv", "XXXX")
+        ])
+    assert "empty.csv" not in str(error)
+    assert error.match("extra_fields.csv")
+    assert error.match("missing_field.csv")
+
+
+def test_check_duplicate_files():
+    check_duplicate_files(["bla", "bla2", "bla3"])
+
+
+def test_check_duplicate_files_with_fails():
+    with pytest.raises(ValueError) as error:
+        check_duplicate_files(["bla", "bla", "bla", "bla",
+                               "bla2",
+                               "bla3", "bla3"])
+    assert "bla2" not in str(error)
+    assert "bla" in str(error)
+    assert "bla3" in str(error)

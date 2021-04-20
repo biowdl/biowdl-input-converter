@@ -11,6 +11,9 @@ Changelog
 ---------------
 + Added option to specify samplesheet fileformat explicitly
 + Added tests for python 3.8
++ The tool now also checks for duplicated paths in the samplesheet to prevent
+  copy-paste errors.
++ Added testing for python 3.8 and 3.9
 
 0.2.1
 ---------------
