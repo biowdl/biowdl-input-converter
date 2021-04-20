@@ -83,7 +83,7 @@ def samplesheet_to_json(samplesheet: Path,
     if fileformat is not None:
         filetype = fileformat.lower().replace('.', '')
     else:
-        filetype = samplesheet.suffix.lower().replace('.','')
+        filetype = samplesheet.suffix.lower().replace('.', '')
 
     if filetype in ["tsv", "csv"]:
         samplegroup = input_conversions.samplesheet_csv_to_samplegroup(
