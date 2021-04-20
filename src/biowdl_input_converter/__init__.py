@@ -104,7 +104,11 @@ def samplesheet_to_json(samplesheet: Path,
 
 def main():
     args = argument_parser().parse_args()
-    output_json = samplesheet_to_json(samplesheet=Path(args.samplesheet), fileformat=args.format, old_style_json=args.old_style_json, file_presence_check=not args.skip_file_check, file_md5_check=args.check_file_md5sums)
+    output_json = samplesheet_to_json(samplesheet=Path(args.samplesheet),
+                                      fileformat=args.format,
+                                      old_style_json=args.old_style_json,
+                                      file_presence_check=not args.skip_file_check,
+                                      file_md5_check=args.check_file_md5sums)
 
     # Only generate output if not validating.
     if not args.validate:
