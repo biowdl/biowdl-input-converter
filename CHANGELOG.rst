@@ -7,10 +7,9 @@ Changelog
 .. NOTE: This document is user facing. Please word the changes in such a way
 .. that users understand how the changes affect the new version.
 
-0.3.0-dev
+0.3.0
 ---------------
 + Added option to specify samplesheet fileformat explicitly
-+ Added tests for python 3.8
 + The tool now also checks for duplicated paths in the samplesheet to prevent
   copy-paste errors.
 + Added testing for python 3.8 and 3.9
