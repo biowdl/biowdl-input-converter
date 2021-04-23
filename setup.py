@@ -26,7 +26,7 @@ LONG_DESCRIPTION = Path("README.rst").read_text()
 
 setup(
     name="biowdl-input-converter",
-    version="0.2.1",
+    version="0.3.0",
     description="Converting various input formats into WDL structs for BioWDL "
                 "pipelines.",
     author="Leiden University Medical Center",
@@ -43,6 +43,8 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
     ],
     python_requires=">=3.7",  # Because of dataclasses

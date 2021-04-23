@@ -7,6 +7,13 @@ Changelog
 .. NOTE: This document is user facing. Please word the changes in such a way
 .. that users understand how the changes affect the new version.
 
+0.3.0
+---------------
++ Added option to specify samplesheet fileformat explicitly
++ The tool now also checks for duplicated paths in the samplesheet to prevent
+  copy-paste errors.
++ Added testing for python 3.8 and 3.9
+
 0.2.1
 ---------------
 + Bugfix: R1_md5 and R2_md5 columns are not required to be defined anymore in a

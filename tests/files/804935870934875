@@ -1,0 +1,9 @@
+samples:
+  - id: rna3-paired-end
+    libraries:
+      - id: lib1
+        readgroups:
+          - id: rg1
+            reads:
+              R1: tests/files/data/R1.fq
+              R2: tests/files/data/R2.fq

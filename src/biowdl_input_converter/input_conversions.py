@@ -50,7 +50,7 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
             library = Library(id=lib_dict.pop("id"))
             for rg_dict in lib_dict.pop("readgroups"):  # type: Dict[str, Any]
                 read_struct = rg_dict.pop("reads")  # type: Dict[str, str]
-                library.append_readgroup(ReadGroup(
+                library.append(ReadGroup(
                     id=rg_dict.pop("id"),
                     R1=read_struct["R1"],
                     R1_md5=read_struct.get("R1_md5", None),
@@ -59,9 +59,9 @@ def biowdl_yaml_to_samplegroup(yaml_file: Path) -> SampleGroup:
                     additional_properties=rg_dict
                 ))
             library.additional_properties.update(lib_dict)
-            sample.append_library(library)
+            sample.append(library)
         sample.additional_properties.update(sample_dict)
-        samplegroup.append_sample(sample)
+        samplegroup.append(sample)
     return samplegroup
 
 

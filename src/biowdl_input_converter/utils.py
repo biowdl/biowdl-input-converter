@@ -22,13 +22,15 @@
 Contains general functions that are not specific to biowdl_input_converter.
 """
 
+import collections
 import csv
 import hashlib
-from pathlib import Path
-from typing import Dict, Generator
+import os
+from typing import Dict, Generator, Iterable, Tuple, Union
 
 
-def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, None]:  # noqa: E501
+def csv_to_dict_generator(csv_file: Union[str, os.PathLike]
+                          ) -> Generator[Dict[str, str], None, None]:
     """
     Converts a csv_file into a generator. The generator yields each row
     (except the header) as a dictionary. {header_column1: value,
@@ -36,7 +38,7 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
     :param csv_file: A pathlib.Path pointing to the csv file.
     :return: a generator that yields rows as Dict[str,str].
     """
-    with csv_file.open("r") as csvfile:
+    with open(csv_file, "r") as csvfile:
         first_ten_lines = "".join([csvfile.readline() for _ in range(10)])
         try:
             dialect = csv.Sniffer().sniff(first_ten_lines, delimiters=";,\t")
@@ -57,7 +59,8 @@ def csv_to_dict_generator(csv_file: Path) -> Generator[Dict[str, str], None, Non
 
 
 # Copied from pytest-workflow
-def file_md5sum(filepath: Path, blocksize: int = 64 * 1024) -> str:
+def file_md5sum(filepath: Union[str, os.PathLike],
+                blocksize: int = 64 * 1024) -> str:
     """
     Generates a md5sum for a file. Reads file in blocks to save memory.
     :param filepath: a pathlib. Path to the file
@@ -68,10 +71,38 @@ def file_md5sum(filepath: Path, blocksize: int = 64 * 1024) -> str:
     :return: a md5sum as hexadecimal string.
     """
     hasher = hashlib.md5()  # nosec: only used for file integrity
-    with filepath.open('rb') as file_handler:  # Read the file in bytes
+    with open(filepath, 'rb') as file_handler:  # Read the file in bytes
         # Hardcode the blocksize at 8192 bytes here.
         # This can be changed or made variable when the requirements compel us
         # to do so.
         for block in iter(lambda: file_handler.read(blocksize), b''):
             hasher.update(block)
     return hasher.hexdigest()
+
+
+def check_existence_list_of_files(files: Iterable[Union[str, os.PathLike]]):
+    # Create a list of files that do not exist
+    non_existing_files = [file for file in files if not os.path.exists(file)]
+    if len(non_existing_files) > 0:
+        raise FileNotFoundError(f"The following files can not be found: "
+                                f"{', '.join(map(str, non_existing_files))}.")
+
+
+def check_md5sums(files_and_sums: Iterable[Tuple[Union[str, os.PathLike], str]]
+                  ):
+    incorrect_files = [file for file, sum in files_and_sums
+                       if not file_md5sum(file) == sum]
+    if len(incorrect_files) > 0:
+        raise ValueError(f"The following files have incorrect md5sums: "
+                         f"{', '.join(map(str, incorrect_files))}")
+
+
+def check_duplicate_files(files: Iterable[Union[str, os.PathLike]]):
+    # Normpath is used to eliminate meaningless differences between paths.
+    counted_files = collections.Counter(os.path.normpath(file)
+                                        for file in files)
+    duplicated_paths = [path for path, count in counted_files.items()
+                        if count > 1]
+    if len(duplicated_paths) > 0:
+        raise ValueError(f"The following files occur multiple times: "
+                         f"{', '.join(map(str, set(duplicated_paths)))}")
